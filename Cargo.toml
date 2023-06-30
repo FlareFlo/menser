@@ -1,0 +1,15 @@
+[package]
+name = "menser"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cli-table = "0.4.7"
+futures = "0.3.28"
+reqwest = { version = "0.11.18", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_with = "3.0.0"
+tokio = { version = "1.29", features = ["full"] }
