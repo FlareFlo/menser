@@ -34,31 +34,46 @@ struct Price {
 	student: f64,
 }
 
-fn todays_menu(id: usize) -> String {
+fn format_todays_menu_url(id: usize) -> String {
 	format!("{BASE_DOMAIN}/v1/locations/{id}/menu/today")
 }
 
-async fn get_todays_menu(id: usize) -> Menu {
-	let req = reqwest::get(todays_menu(id)).await.unwrap();
+async fn request_menu(id: usize) -> Menu {
+	let req = reqwest::get(format_todays_menu_url(id)).await.unwrap();
 
 	req.json().await.unwrap()
 }
 
 #[tokio::main]
 async fn main() {
+
+	let menus = fetch_menus().await;
+
+	let meta = vec![vec!["today".cell()]]
+		.table()
+		.title(vec![
+			"Fetched from".cell().foreground_color(Some(Color::Cyan))
+		]);
+	print_stdout(meta).unwrap();
+
+	render_menus(menus);
+}
+
+type MenuItem<'a> = (Menu, &'a (usize, &'a str));
+
+async fn fetch_menus<'a>() ->  impl IntoIterator<Item = MenuItem<'a>> {
 	let mut threads = vec![];
 	for i in TO_FETCH {
-		threads.push(get_todays_menu(i.0));
+		threads.push(request_menu(i.0));
 	}
-	let mut menus = join_all(threads).await
+	let menus = join_all(threads).await
 		.into_iter()
-		.zip(TO_FETCH.iter());
+		.zip(TO_FETCH.into_iter());
+	menus
+}
 
-	if menus.all(|menu|menu.0.meals.len() == 0) {
-		eprintln!("{}", "No fud today :(");
-		return;
-	}
 
+fn render_menus<'a>(menus: impl IntoIterator<Item = MenuItem<'a>>) {
 	for (menu, (_, mensa_name)) in menus {
 		let cell_color = Some(Color::Green);
 		let table = menu.meals
@@ -72,19 +87,18 @@ async fn main() {
 			.collect::<Vec<_>>()
 			.table()
 			.title(vec![
-                format!("{mensa_name} (excluding {} menu items/side dishes cheaper than {LOWER_PRICE_THRESHOLD}€)",
+				format!("{mensa_name} (excluding {} menu items/side dishes cheaper than {LOWER_PRICE_THRESHOLD}€)",
 						menu.meals.iter()
 							.filter(|meal|meal.price.student <= LOWER_PRICE_THRESHOLD)
 							.count()
 				).as_str()
 					.cell()
 					.foreground_color(Some(Color::Cyan)),
-                "Price".cell()
+				"Price".cell()
 					.foreground_color(Some(Color::Cyan)),
-            ])
+			])
 			.color_choice(ColorChoice::Auto);
 
 		print_stdout(table).unwrap();
 	}
 }
-
