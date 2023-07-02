@@ -50,9 +50,14 @@ async fn main() {
 	for i in TO_FETCH {
 		threads.push(get_todays_menu(i.0));
 	}
-	let menus = join_all(threads).await
+	let mut menus = join_all(threads).await
 		.into_iter()
 		.zip(TO_FETCH.iter());
+
+	if menus.all(|menu|menu.0.meals.len() == 0) {
+		eprintln!("{}", "No fud today :(");
+		return;
+	}
 
 	for (menu, (_, mensa_name)) in menus {
 		let cell_color = Some(Color::Green);
