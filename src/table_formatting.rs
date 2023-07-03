@@ -2,7 +2,7 @@ use cli_table::{Cell, Color, ColorChoice, print_stdout, Style, Table};
 use cli_table::Color::Rgb;
 use cli_table::format::Justify;
 use pad::PadStr;
-use crate::api_shema::MenuItem;
+use crate::api_schema::MenuItem;
 use crate::constants;
 
 pub fn render_meta(longest_meal_name: usize) {

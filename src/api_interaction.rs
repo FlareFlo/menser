@@ -1,5 +1,5 @@
 use futures::future::join_all;
-use crate::api_shema::{Menu, MenuItem};
+use crate::api_schema::{Menu, MenuItem};
 use crate::constants;
 
 fn format_todays_menu_url(id: usize) -> String {
@@ -13,7 +13,7 @@ pub async fn fetch_menus<'a>() -> Vec<MenuItem<'a>> {
 	}
 	let menus = join_all(threads).await
 		.into_iter()
-		.zip(constants::TO_FETCH.into_iter());
+		.zip(constants::TO_FETCH.iter());
 	menus.collect()
 }
 
