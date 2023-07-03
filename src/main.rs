@@ -1,6 +1,7 @@
 use cli_table::{Cell, Color, ColorChoice, print_stdout, Style, Table};
 use cli_table::format::Justify;
 use futures::future::join_all;
+use pad::PadStr;
 use serde::{Deserialize, Serialize};
 use serde_with::DisplayFromStr;
 use serde_with::serde_as;
@@ -49,19 +50,35 @@ async fn main() {
 
 	let menus = fetch_menus().await;
 
-	let meta = vec![vec!["today".cell()]]
+	let compute_longest_meal = |item: &MenuItem| {
+		item.0
+			.meals
+			.iter()
+			.max_by(|lhs, rhs|
+				lhs.name.len().cmp(&rhs.name.len())
+			).unwrap()
+			.name
+			.len()
+	};
+
+	let longest_meal_name = compute_longest_meal(menus.iter().max_by(|lhs, rhs|{
+		compute_longest_meal(lhs).cmp(&compute_longest_meal(rhs))
+	}).unwrap());
+
+	let meta = vec![vec!["today".cell().justify(Justify::Center), "".cell()]]
 		.table()
 		.title(vec![
-			"Fetched from".cell().foreground_color(Some(Color::Cyan))
+			"Fetched from".pad_to_width(longest_meal_name).cell().foreground_color(Some(Color::Cyan)),
+			"".pad_to_width(7).cell()
 		]);
 	print_stdout(meta).unwrap();
 
-	render_menus(menus);
+	render_menus(menus, longest_meal_name);
 }
 
 type MenuItem<'a> = (Menu, &'a (usize, &'a str));
 
-async fn fetch_menus<'a>() ->  impl IntoIterator<Item = MenuItem<'a>> {
+async fn fetch_menus<'a>() ->  Vec<MenuItem<'a>> {
 	let mut threads = vec![];
 	for i in TO_FETCH {
 		threads.push(request_menu(i.0));
@@ -69,11 +86,11 @@ async fn fetch_menus<'a>() ->  impl IntoIterator<Item = MenuItem<'a>> {
 	let menus = join_all(threads).await
 		.into_iter()
 		.zip(TO_FETCH.into_iter());
-	menus
+	menus.collect()
 }
 
 
-fn render_menus<'a>(menus: impl IntoIterator<Item = MenuItem<'a>>) {
+fn render_menus<'a>(menus: impl IntoIterator<Item = MenuItem<'a>>, longest_meal_name: usize) {
 	for (menu, (_, mensa_name)) in menus {
 		let cell_color = Some(Color::Green);
 		let table = menu.meals
@@ -81,7 +98,7 @@ fn render_menus<'a>(menus: impl IntoIterator<Item = MenuItem<'a>>) {
 			.filter(|meal|meal.price.student > LOWER_PRICE_THRESHOLD)
 			.map(|meal|
 				vec![
-					meal.name.as_str().cell().foreground_color(cell_color),
+					meal.name.pad_to_width(longest_meal_name).as_str().cell().foreground_color(cell_color),
 					meal.price.student.cell().justify(Justify::Right).foreground_color(cell_color)
 				])
 			.collect::<Vec<_>>()
@@ -94,7 +111,7 @@ fn render_menus<'a>(menus: impl IntoIterator<Item = MenuItem<'a>>) {
 				).as_str()
 					.cell()
 					.foreground_color(Some(Color::Cyan)),
-				"Price".cell()
+				"Price €".cell()
 					.foreground_color(Some(Color::Cyan)),
 			])
 			.color_choice(ColorChoice::Auto);
