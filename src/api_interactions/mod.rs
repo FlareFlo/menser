@@ -1,7 +1,7 @@
 use crate::api_schema::MenuItem;
 use crate::constants;
 
-mod a_sync;
+mod r#async;
 mod sync;
 
 pub fn format_todays_menu_url(id: usize) -> String {
@@ -14,7 +14,7 @@ pub fn fetch_menus<'a>() -> Vec<MenuItem<'a>> {
 		let rt = tokio::runtime::Runtime::new().unwrap();
 		let mut threads = vec![];
 		for i in constants::TO_FETCH {
-			threads.push(rt.spawn(crate::api_interactions::a_sync::request_menu(i.0)));
+			threads.push(rt.spawn(crate::api_interactions::r#async::request_menu(i.0)));
 		}
 		let menus = rt.block_on(futures::future::join_all(threads))
 			.into_iter()
