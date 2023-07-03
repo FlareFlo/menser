@@ -1,10 +1,9 @@
 mod api_schema;
 mod constants;
-mod api_interaction;
 mod table_formatting;
 mod api_interactions;
 
-use crate::api_interaction::{fetch_menus};
+use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu};
 use crate::table_formatting::{render_menus, render_meta};
 
