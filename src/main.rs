@@ -21,6 +21,23 @@ struct Menu {
 	meals: Vec<Meal>,
 }
 
+impl Menu {
+	pub fn longest_menu_name(&self) -> usize {
+		self.meals
+			.iter()
+			.max_by(|lhs, rhs|
+				lhs.name.len().cmp(&rhs.name.len())
+			).unwrap()
+			.name
+			.len()
+	}
+	pub fn longest_menu_names(menus: &[MenuItem]) -> usize {
+		 menus.iter().max_by(|lhs, rhs|{
+			lhs.0.longest_menu_name().cmp(&rhs.0.longest_menu_name())
+		}).unwrap().0.longest_menu_name()
+	}
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct Meal {
 	id: usize,
@@ -50,20 +67,8 @@ async fn main() {
 
 	let menus = fetch_menus().await;
 
-	let compute_longest_meal = |item: &MenuItem| {
-		item.0
-			.meals
-			.iter()
-			.max_by(|lhs, rhs|
-				lhs.name.len().cmp(&rhs.name.len())
-			).unwrap()
-			.name
-			.len()
-	};
+	let longest_meal_name = Menu::longest_menu_names(&menus);
 
-	let longest_meal_name = compute_longest_meal(menus.iter().max_by(|lhs, rhs|{
-		compute_longest_meal(lhs).cmp(&compute_longest_meal(rhs))
-	}).unwrap());
 
 	let meta = vec![vec!["today".cell().justify(Justify::Center), "".cell()]]
 		.table()
