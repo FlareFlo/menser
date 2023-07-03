@@ -58,6 +58,13 @@ struct Meal {
 	id: usize,
 	name: String,
 	price: Price,
+	tags: Tags,
+}
+
+impl Meal {
+	pub fn is_lower_saxony_menu(&self) -> bool {
+		self.tags.categories.contains(&Category { name: "Niedersachsen Menü".to_string() })
+	}
 }
 
 #[serde_as]
@@ -65,6 +72,16 @@ struct Meal {
 struct Price {
 	#[serde_as(as = "DisplayFromStr")]
 	student: f64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct Tags {
+	categories: Vec<Category>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+struct Category {
+	name: String,
 }
 
 fn format_todays_menu_url(id: usize) -> String {
@@ -123,7 +140,11 @@ fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_meal_na
 			.filter(|meal| meal.price.student > LOWER_PRICE_THRESHOLD)
 			.map(|meal|
 				vec![
-					meal.name.pad_to_width(longest_meal_name).as_str().cell().foreground_color(cell_color),
+					meal.name.pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
+						Some(Rgb(255,233,0))
+					} else {
+						cell_color
+					}),
 					meal.price.student.cell().justify(Justify::Right).foreground_color(Some(compute_price_color(meal.price.student))),
 				])
 			.collect::<Vec<_>>()
