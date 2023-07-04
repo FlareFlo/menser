@@ -38,6 +38,12 @@ impl Menu {
 			lhs.0.most_expensive_meal().total_cmp(&rhs.0.most_expensive_meal())
 		}).unwrap().0.most_expensive_meal()
 	}
+
+	pub fn count_meals(menus: &[MenuItem]) -> usize {
+		menus.iter()
+			.map(|menu|menu.0.meals.len())
+			.sum()
+	}
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

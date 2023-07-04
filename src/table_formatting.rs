@@ -5,8 +5,8 @@ use pad::PadStr;
 use crate::api_schema::MenuItem;
 use crate::constants;
 
-pub fn render_meta(longest_meal_name: usize) {
-	let meta = vec![vec!["today".cell(), "".cell()]]
+pub fn render_meta(longest_meal_name: usize, day: &str) {
+	let meta = vec![vec![day.cell(), "".cell()]]
 		.table()
 		.title(vec![
 			"Fetched from".pad_to_width(longest_meal_name).cell().foreground_color(Some(Color::Cyan)),
