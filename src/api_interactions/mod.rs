@@ -1,7 +1,9 @@
 use crate::api_schema::MenuItem;
 use crate::constants;
 
+#[cfg(feature = "async-reqwest")]
 mod r#async;
+#[cfg(feature = "sync-ureq")]
 mod sync;
 
 pub fn format_todays_menu_url(id: usize) -> String {
