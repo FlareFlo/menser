@@ -29,9 +29,9 @@ pub fn fetch_menus<'a>() -> Vec<MenuItem<'a>> {
 	#[cfg(feature = "sync-ureq")]
 	{
 		let mut threads = vec![];
-		for i in constants::TO_FETCH {
+		for i in TO_FETCH {
 			threads.push(std::thread::spawn(|| {
-				crate::api_interactions::sync::request_menu(i.0)
+				sync::request_menu(i.0)
 			}));
 		}
 		let mut joined = vec![];
