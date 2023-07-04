@@ -10,6 +10,13 @@ license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# Decreases build times drastically, as performance is not a concern here
+[profile.release]
+opt-level = 0
+debug = true
+overflow-checks = true
+codegen-units = 32
+
 [dependencies]
 cli-table = "0.4.7"
 pad = "0.1.6"
