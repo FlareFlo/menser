@@ -11,13 +11,13 @@ pub fn format_todays_menu_url(id: usize, day: &str) -> String {
 	format!("{}/v1/locations/{id}/menu/{}", constants::BASE_DOMAIN, day)
 }
 
-pub fn fetch_menus<'a>(day: &str) -> Vec<MenuItem<'a>> {
+pub fn fetch_menus<'a>(day: String) -> Vec<MenuItem<'a>> {
 	#[cfg(feature = "async-reqwest")]
 	{
 		let rt = tokio::runtime::Runtime::new().unwrap();
 		let mut threads = vec![];
 		for i in TO_FETCH {
-			let day = day.to_string();
+			let day = day.clone();
 			threads.push(rt.spawn(r#async::request_menu(i.0, day)));
 		}
 		let menus = rt.block_on(futures::future::join_all(threads))
@@ -31,8 +31,9 @@ pub fn fetch_menus<'a>(day: &str) -> Vec<MenuItem<'a>> {
 	{
 		let mut threads = vec![];
 		for i in TO_FETCH {
-			threads.push(std::thread::spawn(|| {
-				sync::request_menu(i.0, day)
+			let day = day.clone();
+			threads.push(std::thread::spawn( move || {
+				sync::request_menu(i.0, &day)
 			}));
 		}
 		let mut joined = vec![];

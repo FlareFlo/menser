@@ -13,14 +13,14 @@ compile_error!("Only either async-reqwest or sync-ureq may be enabled at once ti
 
 
 fn main() {
-	let mut day = "today";
-	let mut menus = fetch_menus(day);
+	let mut day = "today".to_owned();
+	let mut menus = fetch_menus(day.clone());
 	if Menu::count_meals(&menus) == 0 {
 		for weekday in WEEKDAYS {
-			let next_day_menus = fetch_menus(day);
+			let next_day_menus = fetch_menus(day.clone());
 			if Menu::count_meals(&next_day_menus) != 0 {
 				menus = next_day_menus;
-				day = weekday;
+				day = weekday.to_string();
 				break;
 			}
 		}
@@ -29,7 +29,7 @@ fn main() {
 	let longest_meal_name = Menu::longest_menu_names(&menus);
 	let most_expensive_price = Menu::most_expensive_meals(&menus);
 
-	render_meta(longest_meal_name, day);
+	render_meta(longest_meal_name, &day);
 
 	render_menus(menus, longest_meal_name, most_expensive_price);
 }
