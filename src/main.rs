@@ -12,6 +12,7 @@ compile_error!("Only either async-reqwest or sync-ureq may be enabled at once ti
 
 
 fn main() {
+	let current_day = time::OffsetDateTime::now_local().unwrap().weekday().to_string();
 	let fetch_order = vec!["today", "monday", "tuesday", "wednesday", "thursday", "friday"];
 
 	// Fetch menus from today through all weekdays until a valid menu is found
