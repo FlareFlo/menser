@@ -12,13 +12,15 @@ compile_error!("Only either async-reqwest or sync-ureq may be enabled at once ti
 
 
 fn main() {
-	let current_day = time::OffsetDateTime::now_local().unwrap().weekday().to_string();
-	let fetch_order = vec!["today", "monday", "tuesday", "wednesday", "thursday", "friday"];
+	let current_day = time::OffsetDateTime::now_local().unwrap().weekday().to_string().to_lowercase();
+	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday"]
+		.into_iter()
+		.skip_while(|day|day!= &current_day);
 
 	// Fetch menus from today through all weekdays until a valid menu is found
 	let (menus, day) = {
 		let mut menu = None;
-		for query_param in fetch_order {
+		for query_param in week_days {
 			let menus = fetch_menus(query_param.to_owned());
 			if Menu::count_meals(&menus) == 0 {
 				eprintln!("No food for {query_param}, picking next possible date");
