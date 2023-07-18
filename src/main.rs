@@ -5,7 +5,6 @@ mod api_interactions;
 
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu};
-use crate::constants::WEEKDAYS;
 use crate::table_formatting::{render_menus, render_meta};
 
 #[cfg(all(feature = "async-reqwest", feature = "sync-ureq"))]
@@ -13,18 +12,22 @@ compile_error!("Only either async-reqwest or sync-ureq may be enabled at once ti
 
 
 fn main() {
-	let mut day = "today".to_owned();
-	let mut menus = fetch_menus(day.clone());
-	if Menu::count_meals(&menus) == 0 {
-		for weekday in WEEKDAYS {
-			let next_day_menus = fetch_menus(day.clone());
-			if Menu::count_meals(&next_day_menus) != 0 {
-				menus = next_day_menus;
-				day = weekday.to_string();
-				break;
+	let fetch_order = vec!["today", "monday", "tuesday", "wednesday", "thursday", "friday"];
+
+	// Fetch menus from today through all weekdays until a valid menu is found
+	let (menus, day) = {
+		let mut menu = None;
+		for query_param in fetch_order {
+			let menus = fetch_menus(query_param.to_owned());
+			if Menu::count_meals(&menus) == 0 {
+				eprintln!("No food for {query_param}, picking next possible date");
+				continue;
 			}
+			menu = Some((menus, query_param));
+			break;
 		}
-	}
+		menu
+	}.expect("No menus in weekdays at all");
 
 	let longest_meal_name = Menu::longest_menu_names(&menus);
 	let most_expensive_price = Menu::most_expensive_meals(&menus);
