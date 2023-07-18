@@ -39,10 +39,8 @@ impl Menu {
 		}).unwrap().0.most_expensive_meal()
 	}
 
-	pub fn count_meals(menus: &[MenuItem]) -> usize {
-		menus.iter()
-			.map(|menu|menu.0.meals.len())
-			.sum()
+	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MenuItem<'a>>) -> usize {
+		menus.map(|menu|menu.0.meals.len()).sum()
 	}
 }
 

@@ -17,8 +17,8 @@ fn main() {
 	let (menus, day) = {
 		let mut menu = None;
 		for query_param in week_days {
-			let menus = fetch_menus(query_param.to_owned());
-			if Menu::count_meals(&menus) == 0 {
+			let menus = fetch_menus(query_param).unwrap();
+			if Menu::count_meals(menus.iter()) == 0 {
 				eprintln!("No food for {query_param}, picking next possible date");
 				continue;
 			}

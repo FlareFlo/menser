@@ -8,25 +8,26 @@ pub fn format_todays_menu_url(id: usize, day: &str) -> String {
 	format!("{}/v1/locations/{id}/menu/{}", constants::BASE_DOMAIN, day)
 }
 
-pub fn fetch_menus<'a>(day: String) -> Vec<MenuItem<'a>> {
+pub fn fetch_menus<'a>(day: &str) -> Option<Vec<MenuItem<'a>>> {
 	let mut threads = vec![];
 	for i in TO_FETCH {
-		let day = day.clone();
+		// We own the memory for day here, to safely pass it to the threads
+		let day = day.to_owned();
 		threads.push(std::thread::spawn( move || {
-			request_menu(i.0, &day)
+			request_menu(i.0, day)
 		}));
 	}
-	let mut joined = vec![];
+	let mut joined: Vec<Menu> = vec![];
 	for thread in threads {
-		joined.push(thread.join().unwrap());
+		joined.push(thread.join().ok()??);
 	}
-	joined.into_iter().zip(TO_FETCH.iter()).collect()
+	Some(joined.into_iter().zip(TO_FETCH.iter()).collect())
 }
 
 
 
-pub fn request_menu(id: usize, day: &str) -> Menu {
-	let req = ureq::get(&format_todays_menu_url(id, day)).call().unwrap();
+pub fn request_menu(id: usize, day: String) -> Option<Menu> {
+	let req = ureq::get(&format_todays_menu_url(id, &day)).call().ok()?;
 
-	req.into_json().unwrap()
+	req.into_json().ok()?
 }
