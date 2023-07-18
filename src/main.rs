@@ -7,10 +7,6 @@ use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu};
 use crate::table_formatting::{render_menus, render_meta};
 
-#[cfg(all(feature = "async-reqwest", feature = "sync-ureq"))]
-compile_error!("Only either async-reqwest or sync-ureq may be enabled at once time");
-
-
 fn main() {
 	let current_day = time::OffsetDateTime::now_local().unwrap().weekday().to_string().to_lowercase();
 	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday"]

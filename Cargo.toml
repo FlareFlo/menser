@@ -25,16 +25,10 @@ serde_json = { version = "1.0", default-features = false, features = ["std"]}
 serde_with = { version = "3.0.0", default-features = false, features = ["macros"]}
 
 # Async request runtime, more depdenencies but shorter fetch time
-tokio = { version = "1.29.1",  default-features = false, features = ["macros", "rt-multi-thread"],  optional = true }
-reqwest = { version = "0.11.18", default-features = false, features = ["json", "rustls-tls"],  optional = true}
-futures = { version = "0.3.28", default-features = false, features = ["executor"], optional = true}
+tokio = { version = "1.29.1",  default-features = false, features = ["macros", "rt-multi-thread"] }
+reqwest = { version = "0.11.18", default-features = false, features = ["json", "rustls-tls"]}
+futures = { version = "0.3.28", default-features = false, features = ["executor"]}
 
 # Ligthweight sync request runtime, less depdenencies but longer fetch time
-ureq = {version = "2.6.2",  default-features = false, features = ["tls", "json"], optional = true}
+ureq = {version = "2.6.2",  default-features = false, features = ["tls", "json"]}
 time = { version = "0.3.23", default-features = false, features = ["local-offset"] }
-
-[features]
-default = ["sync-ureq"]
-async-reqwest = ["dep:reqwest", "dep:tokio", "dep:futures"]
-sync-ureq = ["dep:ureq"]
-
