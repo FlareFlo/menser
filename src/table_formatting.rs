@@ -29,7 +29,7 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 			.filter(|meal| meal.price.student > constants::LOWER_PRICE_THRESHOLD)
 			.map(|meal|
 				vec![
-					meal.name.pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
+					meal.name_en.pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
 						Some(Rgb(255,233,0))
 					} else {
 						cell_color

@@ -14,9 +14,9 @@ impl Menu {
 		self.meals
 			.iter()
 			.max_by(|lhs, rhs|
-				lhs.name.len().cmp(&rhs.name.len())
+				lhs.name_en.len().cmp(&rhs.name_en.len())
 			).unwrap()
-			.name
+			.name_en
 			.len()
 	}
 	pub fn longest_menu_names(menus: &[MenuItem]) -> usize {
@@ -47,7 +47,7 @@ impl Menu {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Meal {
 	pub id: usize,
-	pub name: String,
+	pub name_en: String,
 	pub price: Price,
 	pub tags: Tags,
 }
