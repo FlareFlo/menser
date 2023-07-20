@@ -28,3 +28,4 @@ time = { version = "0.3.23", default-features = false, features = ["local-offset
 chatgpt_rs = "1.1.12"
 dotenv = "0.15.0"
 tokio = { version = "1.29.1", default-features = false, features = ["rt-multi-thread"] }
+clearscreen = "2.0.1"

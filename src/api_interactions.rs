@@ -4,6 +4,30 @@ use crate::constants::TO_FETCH;
 use crate::api_schema::{Menu};
 
 
+pub fn get_menus() -> (Vec<MenuItem<'static>>, &'static str) {
+	// let current_day = time::OffsetDateTime::now_local().unwrap().weekday().to_string().to_lowercase();
+	let current_day = "thursday".to_owned();
+	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday"]
+		.into_iter()
+		.skip_while(|day| day != &current_day);
+
+	// Fetch menus from today through all weekdays until a valid menu is found
+	let (menus, day) = {
+		let mut menu = None;
+		for query_param in week_days {
+			let menus = fetch_menus(query_param).unwrap();
+			if Menu::count_meals(menus.iter()) == 0 {
+				eprintln!("No food for {query_param}, picking next possible date");
+				continue;
+			}
+			menu = Some((menus, query_param));
+			break;
+		}
+		menu
+	}.expect("No menus in weekdays at all");
+	(menus, day)
+}
+
 pub fn format_todays_menu_url(id: usize, day: &str) -> String {
 	format!("{}/v1/locations/{id}/menu/{}", constants::BASE_DOMAIN, day)
 }
