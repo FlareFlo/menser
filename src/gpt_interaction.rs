@@ -1,11 +1,14 @@
 use std::{env, fs};
+use std::io::{stdout, Write};
 use std::sync::LazyLock;
 
 use chatgpt::client::ChatGPT;
 use chatgpt::config::ModelConfigurationBuilder;
 use chatgpt::config::ChatGPTEngine::Gpt35Turbo;
+use chatgpt::types::ResponseChunk;
 use dotenv::dotenv;
 use time::Instant;
+use futures::stream::StreamExt;
 
 use crate::api_schema::{Menu, MenuItem};
 
@@ -30,15 +33,32 @@ pub async fn ask_gpt<'a>(menus: Vec<MenuItem<'a>>) {
 	let query = format!("Following meals are available today: {}. i would like to eat something that fits my personal-preferences {personal_preferences}", Menu::format_gpt_readable(&menus));
 
 	let start = Instant::now();
-	let res = convo.send_message(&query).await.unwrap();
-	println!("{}", &res.message().content);
+	let res = convo.send_message_streaming(&query).await.unwrap();
+	clearscreen::clear().unwrap();
+	res
+		.for_each(|each| async move {
+			match each {
+				ResponseChunk::Content {
+					delta,
+					response_index: _,
+				} => {
+					// Printing part of response without the newline
+					print!("{delta}");
+					// Manually flushing the standard output, as `print` macro does not do that
+					stdout().lock().flush().unwrap();
+				}
+				_ => {}
+			}
+		})
+		.await;
+
 	let input_cost = 0.03;
 	let output_cost = 0.06;
-	let in_cost = res.usage.prompt_tokens as f64 / 1000.0 * input_cost;
-	let out_cost = res.usage.completion_tokens as f64 / 1000.0 * output_cost;
-	let est_cost = in_cost + out_cost;
-	println!();
+	// let in_cost = res.usage.prompt_tokens as f64 / 1000.0 * input_cost;
+	// let out_cost = res.usage.completion_tokens as f64 / 1000.0 * output_cost;
+	// let est_cost = in_cost + out_cost;
+	// println!();
 	println!("Gpt-4 took: {:.2} seconds", start.elapsed().as_seconds_f64());
-	println!("Estimated API cost: {:.6}$", est_cost);
-	println!("Using one dollar, you could make {:.1} requests", 1.0 / est_cost);
+	// println!("Estimated API cost: {:.6}$", est_cost);
+	// println!("Using one dollar, you could make {:.1} requests", 1.0 / est_cost);
 }
