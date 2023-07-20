@@ -1,15 +1,13 @@
-use std::cell::{LazyCell, OnceCell};
 use std::{env, fs};
 use std::sync::LazyLock;
+
 use chatgpt::client::ChatGPT;
-use chatgpt::config::ChatGPTEngine::{Gpt35Turbo, Gpt4, Gpt4_32k_0314};
-use chatgpt::config::{ChatGPTEngine, ModelConfigurationBuilder};
-use chatgpt::types::CompletionResponse;
+use chatgpt::config::ModelConfigurationBuilder;
+use chatgpt::config::ChatGPTEngine::Gpt35Turbo;
 use dotenv::dotenv;
 use time::Instant;
-use crate::api_interactions::fetch_menus;
+
 use crate::api_schema::{Menu, MenuItem};
-use crate::table_formatting::{render_menus, render_meta};
 
 pub static GPT: LazyLock<ChatGPT> = LazyLock::new(|| {
 	// Load env files to env-vars
