@@ -17,12 +17,12 @@ use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu, MenuItem};
 use crate::table_formatting::{render_menus, render_meta};
 
-pub static GPT: LazyLock<ChatGPT> = LazyLock::new(||{
+pub static GPT: LazyLock<ChatGPT> = LazyLock::new(|| {
 	// Load env files to env-vars
 	dotenv().ok();
 	let token = env::var("TOKEN").unwrap();
 	let model_config = ModelConfigurationBuilder::default()
-		.engine(Gpt35Turbo)
+		.engine(Gpt4)
 		.build()
 		.unwrap();
 
@@ -47,8 +47,12 @@ async fn main() {
 	let query = format!("Following meals are available today: {menus:?}. i would like to eat something that fits my personal-preferences {personal_preferences}");
 	let res = convo.send_message(&query).await.unwrap();
 	println!("{}", &res.message().content);
-	let est_cost = res.usage.total_tokens as f64 / 1000.0 * 0.002;
-	println!("Estimated API cost: {}$", est_cost);
+	let input_cost = 0.03;
+	let output_cost = 0.06;
+	let in_cost = res.usage.prompt_tokens as f64 / 1000.0 * input_cost;
+	let out_cost = res.usage.completion_tokens as f64 / 1000.0 * output_cost;
+	let est_cost = in_cost + out_cost;
+	println!("Estimated API cost: {:.6}$", est_cost);
 	println!("Using one dollar, you could make {:.1} requests", 1.0 / est_cost);
 }
 
@@ -58,7 +62,7 @@ fn get_menus() -> (Vec<MenuItem<'static>>, &'static str) {
 	let current_day = "thursday".to_owned();
 	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday"]
 		.into_iter()
-		.skip_while(|day|day!= &current_day);
+		.skip_while(|day| day != &current_day);
 
 	// Fetch menus from today through all weekdays until a valid menu is found
 	let (menus, day) = {
