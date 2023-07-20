@@ -44,7 +44,7 @@ impl Menu {
 	}
 
 	pub fn format_gpt_readable<'a>(menus: &[MenuItem]) -> String {
-		menus.iter().map(|menu| format!("Menu from cafeteria {}: {}", menu.1.1, menu.0.meals.iter().map(|e| e.format_gpt_readable()).collect::<Vec<_>>().join(", ")))
+		menus.iter().map(|menu| format!("Menu from cafeteria {}, {}\n", menu.1.1, menu.0.meals.iter().map(|e| e.format_gpt_readable()).collect::<Vec<_>>().join(", ")))
 			.collect::<Vec<String>>()
 			.join("\n")
 	}

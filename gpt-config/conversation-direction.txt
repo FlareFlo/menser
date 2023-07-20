@@ -5,4 +5,4 @@ Side dishes and the main dish should not combine to be more expensive than 5.5â‚
 You should list 5 best-picks to eat for this day, including why this meal might be relevant regarding the users personal preferences.
 Please keep the amount of formalities to a minimum, as the user is only directly interested in the meals themselves.
 Do not format the output in any way, as it must be readable in an ASCII terminal.
-Keep the output below one sentence per dish each, to ensure the reader is not overwhelmed.
+Keep the output at exactly one sentence, to ensure the reader is not overwhelmed.
