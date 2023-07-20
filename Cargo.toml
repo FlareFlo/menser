@@ -25,3 +25,6 @@ serde_json = { version = "1.0", default-features = false, features = ["std"]}
 serde_with = { version = "3.0.0", default-features = false, features = ["macros"]}
 ureq = {version = "2.6.2",  default-features = false, features = ["tls", "json"]}
 time = { version = "0.3.23", default-features = false, features = ["local-offset"] }
+chatgpt_rs = "1.1.12"
+dotenv = "0.15.0"
+tokio = { version = "1.29.1", default-features = false, features = ["rt-multi-thread"] }
