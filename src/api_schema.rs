@@ -40,7 +40,13 @@ impl Menu {
 	}
 
 	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MenuItem<'a>>) -> usize {
-		menus.map(|menu|menu.0.meals.len()).sum()
+		menus.map(|menu| menu.0.meals.len()).sum()
+	}
+
+	pub fn format_gpt_readable<'a>(menus: &[MenuItem]) -> String {
+		menus.iter().map(|menu| format!("Menu from cafeteria {}: {}", menu.1.1, menu.0.meals.iter().map(|e|e.format_gpt_readable()).collect::<Vec<_>>().join(", ")))
+			.collect::<Vec<String>>()
+			.join("\n")
 	}
 }
 
@@ -56,6 +62,9 @@ impl Meal {
 	pub fn is_lower_saxony_menu(&self) -> bool {
 		self.tags.categories.contains(&Category { name: "Niedersachsen Menü".to_string() })
 	}
+	pub fn format_gpt_readable(&self) -> String {
+		format!("{} for {}€ and the tags {}", self.name_en, self.price.student, self.tags.format_gpt_readable())
+	}
 }
 
 #[serde_as]
@@ -68,6 +77,12 @@ pub struct Price {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Tags {
 	pub categories: Vec<Category>,
+}
+
+impl Tags {
+	pub fn format_gpt_readable(&self) -> String {
+		self.categories.iter().map(|category|category.name.clone()).collect::<Vec<_>>().join(" ")
+	}
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
