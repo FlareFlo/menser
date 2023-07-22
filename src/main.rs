@@ -8,10 +8,14 @@ use crate::api_schema::{Menu};
 use crate::table_formatting::{render_menus, render_meta};
 
 fn main() {
+	color_eyre::install().unwrap();
 	let current_day = time::OffsetDateTime::now_local().unwrap().weekday().to_string().to_lowercase();
-	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday"]
+	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 		.into_iter()
-		.skip_while(|day|day!= &current_day);
+		.cycle()
+		.skip_while(|day|day!= &current_day)
+		.take(7)
+		.collect::<Vec<_>>();
 
 	// Fetch menus from today through all weekdays until a valid menu is found
 	let (menus, day) = {
