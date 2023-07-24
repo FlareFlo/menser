@@ -1,6 +1,6 @@
 use cli_table::{Cell, Color, ColorChoice, print_stdout, Style, Table};
 use cli_table::Color::Rgb;
-use cli_table::format::Justify;
+use cli_table::format::{Justify};
 use pad::PadStr;
 use crate::api_schema::MenuItem;
 use crate::constants;
@@ -45,6 +45,7 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 							.count(),
 						constants::LOWER_PRICE_THRESHOLD,
 				).as_str()
+					.pad_to_width(longest_meal_name)
 					.cell()
 					.foreground_color(Some(Color::Cyan)),
 				"Price €".cell()
