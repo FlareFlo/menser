@@ -1,9 +1,9 @@
-use cli_table::{Cell, Color, ColorChoice, print_stdout, Style, Table};
+use cli_table::{Cell, Color, print_stdout, Style, Table};
 use cli_table::Color::Rgb;
 use cli_table::format::{Justify};
 use pad::PadStr;
 use crate::api_schema::MenuItem;
-use crate::constants;
+use crate::{COLOR, constants};
 
 pub fn render_meta(longest_meal_name: usize, day: &str) {
 	let meta = vec![vec![day.cell(), "".cell()]]
@@ -11,7 +11,8 @@ pub fn render_meta(longest_meal_name: usize, day: &str) {
 		.title(vec![
 			"Fetched from".pad_to_width(longest_meal_name).cell().foreground_color(Some(Color::Cyan)),
 			"".pad_to_width(7).cell(),
-		]);
+		])
+		.color_choice(*COLOR.get().unwrap());
 	print_stdout(meta).unwrap();
 }
 
@@ -51,7 +52,7 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 				"Price €".cell()
 					.foreground_color(Some(Color::Cyan)),
 			])
-			.color_choice(ColorChoice::Auto);
+			.color_choice(*COLOR.get().unwrap());
 
 		print_stdout(table).unwrap();
 	}

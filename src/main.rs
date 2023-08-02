@@ -3,6 +3,10 @@ mod constants;
 mod table_formatting;
 mod api_interactions;
 
+static COLOR: OnceLock<ColorChoice> = OnceLock::new();
+
+use std::sync::OnceLock;
+use cli_table::ColorChoice;
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu};
 use crate::table_formatting::{render_menus, render_meta};
@@ -34,6 +38,14 @@ fn main() {
 
 	let longest_meal_name = Menu::longest_menu_names(&menus);
 	let most_expensive_price = Menu::most_expensive_meals(&menus);
+
+	COLOR.get_or_init(||{
+		if std::env::var("NO_COLOR").is_ok() {
+			ColorChoice::Never
+		} else {
+			ColorChoice::Auto
+		}
+	});
 
 	render_meta(longest_meal_name, &day);
 
