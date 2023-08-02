@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Run menser
-        run: cargo run > menser.txt
+        run: cargo run --release > menser.txt
 
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
