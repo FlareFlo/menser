@@ -5,6 +5,8 @@ mod api_interactions;
 
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
+use std::env;
+use std::env::{Args, args};
 use std::sync::OnceLock;
 use cli_table::ColorChoice;
 use crate::api_interactions::fetch_menus;
@@ -13,7 +15,7 @@ use crate::table_formatting::{render_menus, render_meta};
 
 fn main() {
 	color_eyre::install().unwrap();
-	let current_day = time::OffsetDateTime::now_local().unwrap().weekday().to_string().to_lowercase();
+	let current_day = args().nth(1).unwrap_or(time::OffsetDateTime::now_local().unwrap().weekday().to_string()).to_lowercase();
 	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 		.into_iter()
 		.cycle()
