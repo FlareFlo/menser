@@ -5,8 +5,8 @@ mod api_interactions;
 
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
-use std::env;
-use std::env::{Args, args};
+use std::env::{args};
+use std::process::exit;
 use std::sync::OnceLock;
 use cli_table::ColorChoice;
 use crate::api_interactions::fetch_menus;
@@ -15,8 +15,27 @@ use crate::table_formatting::{render_menus, render_meta};
 
 fn main() {
 	color_eyre::install().unwrap();
-	let current_day = args().nth(1).unwrap_or(time::OffsetDateTime::now_local().unwrap().weekday().to_string()).to_lowercase();
-	let week_days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+	let days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+	let today = time::OffsetDateTime::now_local().unwrap().weekday();
+
+	let current_day = match args().nth(1) {
+		Some(value) => {
+			let value = value.to_lowercase();
+			if value == "tomorrow" {
+				today.next().to_string().to_lowercase()
+			} else {
+				value
+			}
+		}
+		None => { today.to_string().to_lowercase() }
+	};
+
+	if !days.contains(&current_day.as_str()) {
+		eprintln!("Unrecognized day/option: {}", args().nth(1).unwrap_or("".to_owned()));
+		exit(1);
+	}
+
+	let week_days = days
 		.into_iter()
 		.cycle()
 		.skip_while(|day|day!= &current_day)
@@ -41,7 +60,7 @@ fn main() {
 	let longest_meal_name = Menu::longest_menu_names(&menus);
 	let most_expensive_price = Menu::most_expensive_meals(&menus);
 
-	COLOR.get_or_init(||{
+	COLOR.get_or_init(|| {
 		if std::env::var("NO_COLOR").is_ok() {
 			ColorChoice::Never
 		} else {
