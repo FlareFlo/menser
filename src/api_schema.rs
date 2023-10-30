@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::DisplayFromStr;
 use serde_with::serde_as;
+use crate::opening_hours::Location;
 
 pub type MenuItem<'a> = (Menu, &'a (usize, &'a str));
 
@@ -50,6 +51,7 @@ pub struct Meal {
 	pub name: String,
 	pub price: Price,
 	pub tags: Tags,
+	pub location: Location,
 }
 
 impl Meal {

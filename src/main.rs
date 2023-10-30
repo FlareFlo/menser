@@ -2,13 +2,16 @@ mod api_schema;
 mod constants;
 mod table_formatting;
 mod api_interactions;
+mod opening_hours;
 
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
 use std::env::{args};
 use std::process::exit;
+use std::str::FromStr;
 use std::sync::OnceLock;
 use cli_table::ColorChoice;
+use time::Weekday;
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu};
 use crate::table_formatting::{render_menus, render_meta};
@@ -38,7 +41,7 @@ fn main() {
 	let week_days = days
 		.into_iter()
 		.cycle()
-		.skip_while(|day|day!= &current_day)
+		.skip_while(|day| day != &current_day)
 		.take(7)
 		.collect::<Vec<_>>();
 
@@ -70,5 +73,18 @@ fn main() {
 
 	render_meta(longest_meal_name, &day);
 
-	render_menus(menus, longest_meal_name, most_expensive_price);
+	render_menus(menus, longest_meal_name, most_expensive_price, weekday_from_str(day));
+}
+
+fn weekday_from_str(input: &str) -> Weekday {
+	match input {
+		"monday" => Weekday::Monday,
+		"tuesday" => Weekday::Tuesday,
+		"wednesday" => Weekday::Wednesday,
+		"thursday" => Weekday::Thursday,
+		"friday" => Weekday::Friday,
+		"saturday" => Weekday::Saturday,
+		"sunday" => Weekday::Sunday,
+		_ => { panic!("Unrecognized weekday: {input}") }
+	}
 }

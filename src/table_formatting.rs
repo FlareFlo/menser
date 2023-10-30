@@ -2,6 +2,7 @@ use cli_table::{Cell, Color, print_stdout, Style, Table};
 use cli_table::Color::Rgb;
 use cli_table::format::{Justify};
 use pad::PadStr;
+use time::Weekday;
 use crate::api_schema::MenuItem;
 use crate::{COLOR, constants};
 
@@ -16,7 +17,7 @@ pub fn render_meta(longest_meal_name: usize, day: &str) {
 	print_stdout(meta).unwrap();
 }
 
-pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_meal_name: usize, most_expensive_price: f64) {
+pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_meal_name: usize, most_expensive_price: f64, weekday: Weekday) {
 	let compute_price_color = |price: f64| {
 		let lerp_color = |x: f64|(1.1 * x + 33.0).round() as u8;
 		let lerp_price = |x: f64|(x - constants::LOWER_PRICE_THRESHOLD)  /  (most_expensive_price - constants::LOWER_PRICE_THRESHOLD) * 100.0;
@@ -24,6 +25,8 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 	};
 
 	for (menu, (_, mensa_name)) in menus {
+		let formatted_opening_hours = menu.meals.iter().next().map(|e|e.location.format_opening_hours(weekday)).unwrap_or(String::new());
+
 		let cell_color = Some(Color::Green);
 		let table = menu.meals
 			.iter()
@@ -40,11 +43,11 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 			.collect::<Vec<_>>()
 			.table()
 			.title(vec![
-				format!("{mensa_name} (excluding {} menu items/side dishes cheaper than {}€)",
+				format!("{mensa_name} (excluding {} items less than {}€) open today: {formatted_opening_hours}",
 						menu.meals.iter()
 							.filter(|meal| meal.price.student <= constants::LOWER_PRICE_THRESHOLD)
 							.count(),
-						constants::LOWER_PRICE_THRESHOLD,
+						constants::LOWER_PRICE_THRESHOLD
 				).as_str()
 					.pad_to_width(longest_meal_name)
 					.cell()
