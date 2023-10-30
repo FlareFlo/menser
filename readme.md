@@ -1,0 +1,3 @@
+# Menser 😋
+
+PRs welcome.
