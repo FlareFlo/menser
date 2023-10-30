@@ -8,7 +8,6 @@ static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
 use std::env::{args};
 use std::process::exit;
-use std::str::FromStr;
 use std::sync::OnceLock;
 use cli_table::ColorChoice;
 use time::Weekday;
