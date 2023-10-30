@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::DisplayFromStr;
 use serde_with::serde_as;
+use crate::constants;
 use crate::opening_hours::Location;
 
 pub type MenuItem<'a> = (Menu, &'a (usize, &'a str));
@@ -42,6 +43,12 @@ impl Menu {
 
 	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MenuItem<'a>>) -> usize {
 		menus.map(|menu|menu.0.meals.len()).sum()
+	}
+
+	pub fn count_filtered_meals(&self) -> usize {
+		self.meals.iter()
+			.filter(|meal| meal.price.student <= constants::LOWER_PRICE_THRESHOLD && meal.price.student != 0.0)
+			.count()
 	}
 }
 

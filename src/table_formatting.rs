@@ -19,13 +19,14 @@ pub fn render_meta(longest_meal_name: usize, day: &str) {
 
 pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_meal_name: usize, most_expensive_price: f64, weekday: Weekday) {
 	let compute_price_color = |price: f64| {
-		let lerp_color = |x: f64|(1.1 * x + 33.0).round() as u8;
-		let lerp_price = |x: f64|(x - constants::LOWER_PRICE_THRESHOLD)  /  (most_expensive_price - constants::LOWER_PRICE_THRESHOLD) * 100.0;
-		Rgb( lerp_color(lerp_price(price)), lerp_color(100.0 - lerp_price(price)), 33)
+		let lerp_color = |x: f64| (1.1 * x + 33.0).round() as u8;
+		let lerp_price = |x: f64| (x - constants::LOWER_PRICE_THRESHOLD) / (most_expensive_price - constants::LOWER_PRICE_THRESHOLD) * 100.0;
+		Rgb(lerp_color(lerp_price(price)), lerp_color(100.0 - lerp_price(price)), 33)
 	};
 
 	for (menu, (_, mensa_name)) in menus {
-		let formatted_opening_hours = menu.meals.iter().next().map(|e|e.location.format_opening_hours(weekday)).unwrap_or(String::new());
+		let formatted_opening_hours = menu.meals.iter().next().map(|e| e.location.format_opening_hours(weekday)).unwrap_or(String::new());
+		let filtered_meals_count = menu.count_filtered_meals();
 
 		let cell_color = Some(Color::Green);
 		let table = menu.meals
@@ -34,7 +35,7 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 			.map(|meal|
 				vec![
 					meal.name.pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
-						Some(Rgb(255,233,0))
+						Some(Rgb(255, 233, 0))
 					} else {
 						cell_color
 					}),
@@ -43,11 +44,9 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 			.collect::<Vec<_>>()
 			.table()
 			.title(vec![
-				format!("{mensa_name} (excluding {} items less than {}€) open today: {formatted_opening_hours}",
-						menu.meals.iter()
-							.filter(|meal| meal.price.student <= constants::LOWER_PRICE_THRESHOLD)
-							.count(),
-						constants::LOWER_PRICE_THRESHOLD
+				format!("{mensa_name} | (excluding {filtered_meals_count} items less than {}€) | regular hours: {formatted_opening_hours}{}",
+						constants::LOWER_PRICE_THRESHOLD,
+						if filtered_meals_count == 0 { " | (presumed closed)" } else { "" }
 				).as_str()
 					.pad_to_width(longest_meal_name)
 					.cell()
