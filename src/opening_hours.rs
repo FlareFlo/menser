@@ -20,9 +20,9 @@ impl Location {
 
 		self.opening_hours.iter()
 			.filter(|e|e.weekday_in_range(weekday))
-			.map(|e|format!("{} - {}", trim_time(&e.start_time), trim_time(&e.end_time)))
+			.map(|e|format!("{}-{}", trim_time(&e.start_time), trim_time(&e.end_time)))
 			.collect::<Vec<String>>()
-			.join(" , ")
+			.join(", ")
 	}
 }
 

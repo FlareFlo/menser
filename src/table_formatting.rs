@@ -44,7 +44,8 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 			.collect::<Vec<_>>()
 			.table()
 			.title(vec![
-				format!("{mensa_name} | (excluding {filtered_meals_count} items less than {}€) | regular hours: {formatted_opening_hours}{}",
+				format!("{mensa_name} | (excluding {filtered_meals_count} item{} less than {}€) | open: {formatted_opening_hours}{}",
+						if filtered_meals_count > 1 { "s" } else { "" },
 						constants::LOWER_PRICE_THRESHOLD,
 						if filtered_meals_count == 0 { " | (presumed closed)" } else { "" }
 				).as_str()
