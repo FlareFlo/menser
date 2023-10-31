@@ -7,16 +7,16 @@ cargo check
 # Bump version
 cargo set-version --bump patch
 version=$(cargo get package.version)
-git tag $version
-git add Cargo.lock
-git add Cargo.toml
-git commit -m "Releasing version $version"
 
 # publish tag to git
-read -p "Automatically push tag $version to git? " -n 1 -r
+read -p "Automatically add and push tag $version to git? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+  git tag $version
+  git add Cargo.lock
+  git add Cargo.toml
+  git commit -m "Releasing version $version"
   git push origin $version
 fi
 
