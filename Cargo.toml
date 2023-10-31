@@ -18,6 +18,14 @@ debug = true
 overflow-checks = true
 codegen-units = 16
 
+# The profile that 'cargo dist' will build with
+# More optimized such that binary releases are smaller to download
+[profile.dist]
+inherits = "release"
+opt-level = 3
+codegen-units = 4
+lto = "thin"
+
 [dependencies]
 cli-table = "0.4.7"
 pad = "0.1.6"
@@ -27,3 +35,16 @@ serde_with = { version = "3.0.0", default-features = false, features = ["macros"
 ureq = {version = "2.6.2",  default-features = false, features = ["tls", "json"]}
 time = { version = "0.3.23", default-features = false, features = ["local-offset"] }
 color-eyre = { version = "0.6.2", default-features = false }
+
+# Config for 'cargo dist'
+[workspace.metadata.dist]
+# The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
+cargo-dist-version = "0.4.1"
+# CI backends to support
+ci = ["github"]
+# The installers to generate for each app
+installers = ["shell", "powershell"]
+# Target platforms to build apps for (Rust target-triple syntax)
+targets = ["x86_64-unknown-linux-gnu", "aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-musl", "x86_64-pc-windows-msvc"]
+# Publish jobs to run in CI
+pr-run-mode = "skip"
