@@ -4,7 +4,7 @@ authors = ["FlareFlo"]
 description = "Fetches and displays meals from the stw-on API"
 documentation = "https://docs.rs/menser"
 repository = "https://github.com/FlareFlo/menser"
-version = "0.1.19"
+version = "0.1.20"
 edition = "2021"
 license = "MIT"
 readme = "readme.md"
@@ -13,10 +13,10 @@ readme = "readme.md"
 
 # Decreases build times drastically, as performance is not a concern here
 [profile.release]
-opt-level = 0
+opt-level = 1
 debug = true
 overflow-checks = true
-codegen-units = 32
+codegen-units = 16
 
 [dependencies]
 cli-table = "0.4.7"
