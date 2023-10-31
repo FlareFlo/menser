@@ -8,7 +8,7 @@ cargo check
 cargo set-version --bump patch
 version=$(cargo get package.version)
 
-# publish tag to git
+# add and publish tag to git
 read -p "Automatically add and push tag $version to git? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
