@@ -1,6 +1,9 @@
 cargo set-version --version || echo "installing cargo-edit" && cargo install cargo-edit # Validate cargo-edit installation
 cargo get --version || echo "installing cargo-get" && cargo install cargo-get # Validate cargo-get installation
 
+# Just make sure this all makes sense
+cargo check
+
 # Bump version
 cargo set-version --bump patch
 version=$(cargo get package.version)
