@@ -18,6 +18,7 @@ then
   git add Cargo.toml
   git commit -m "Releasing version $version"
   git push origin $version
+  git push
 fi
 
 # publish to crates.io
