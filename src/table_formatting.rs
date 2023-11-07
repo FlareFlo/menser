@@ -28,16 +28,15 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 		let formatted_opening_hours = menu.meals.iter().next().map(|e| e.location.format_opening_hours(weekday)).unwrap_or(String::new());
 		let filtered_meals_count = menu.count_filtered_meals();
 
-		let cell_color = Some(Color::Green);
 		let table = menu.meals
 			.iter()
 			.filter(|meal| meal.price.student > constants::LOWER_PRICE_THRESHOLD)
 			.map(|meal|
 				vec![
-					meal.name.pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
+					emojify_name(meal.name.clone()).pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
 						Some(Rgb(255, 233, 0))
 					} else {
-						cell_color
+						Some(compute_cell_color_from_name(meal.name.as_str()))
 					}),
 					meal.price.student.cell().justify(Justify::Right).foreground_color(Some(compute_price_color(meal.price.student))),
 				])
@@ -59,4 +58,22 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 
 		print_stdout(table).unwrap();
 	}
+}
+
+fn compute_cell_color_from_name(name: &str) -> Color {
+	let lc = name.to_lowercase();
+
+	if lc.contains("pizza") && !lc.contains("burger") { return Color::Magenta }
+
+
+
+	Color::Green
+}
+
+fn emojify_name(mut name: String) -> String {
+	let lc = name.to_lowercase();
+
+	if lc.contains("pizza") && !lc.contains("burger") { name.push('🍕') }
+
+	name
 }
