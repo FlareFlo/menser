@@ -1,3 +1,5 @@
+use color_eyre::eyre::ContextCompat;
+use color_eyre::Report;
 use serde::{Deserialize, Serialize};
 use serde_with::DisplayFromStr;
 use serde_with::serde_as;
@@ -12,33 +14,42 @@ pub struct Menu {
 }
 
 impl Menu {
-	pub fn longest_menu_name(&self) -> usize {
-		self.meals
+	pub fn longest_menu_name(&self) -> Result<usize, Report> {
+		let res = self.meals
 			.iter()
 			.max_by(|lhs, rhs|
 				lhs.name.len().cmp(&rhs.name.len())
-			).unwrap()
+			).context("Found zero meals")?
 			.name
-			.len()
+			.len();
+		Ok(res)
 	}
-	pub fn longest_menu_names(menus: &[MenuItem]) -> usize {
-		menus.iter().max_by(|lhs, rhs| {
-			lhs.0.longest_menu_name().cmp(&rhs.0.longest_menu_name())
-		}).unwrap().0.longest_menu_name()
+	pub fn longest_menu_names(menus: &[MenuItem]) -> Result<usize, Report> {
+		let res = menus.iter()
+			.map(|e|e.0.longest_menu_name())
+			.collect::<Result<Vec<usize>, Report>>()?
+			.into_iter()
+			.max()
+			.context("Zero menu items")?;
+		Ok(res)
 	}
 
-	pub fn most_expensive_meal(&self) -> f64 {
-		self.meals
+	pub fn most_expensive_meal(&self) -> Result<f64, Report> {
+		Ok(self.meals
 			.iter()
 			.max_by(|lhs, rhs|
 				lhs.price.student.total_cmp(&rhs.price.student)
-			).unwrap()
-			.price.student
+			).context("Found zero meals")?
+			.price.student)
 	}
-	pub fn most_expensive_meals(menus: &[MenuItem]) -> f64 {
-		menus.iter().max_by(|lhs, rhs| {
-			lhs.0.most_expensive_meal().total_cmp(&rhs.0.most_expensive_meal())
-		}).unwrap().0.most_expensive_meal()
+	pub fn most_expensive_meals(menus: &[MenuItem]) -> Result<f64, Report> {
+		let res = menus.iter()
+			.map(|e|e.0.most_expensive_meal())
+			.collect::<Result<Vec<f64>, Report>>()?
+			.into_iter()
+			.max_by(|l, r|l.total_cmp(r))
+			.context("Zero menu items")?;
+		Ok(res)
 	}
 
 	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MenuItem<'a>>) -> usize {

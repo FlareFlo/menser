@@ -10,15 +10,17 @@ use std::env::{args};
 use std::process::exit;
 use std::sync::OnceLock;
 use cli_table::ColorChoice;
+use color_eyre::eyre::ContextCompat;
+use color_eyre::Report;
 use time::Weekday;
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu};
 use crate::table_formatting::{render_menus, render_meta};
 
-fn main() {
+fn main() -> Result<(), Report> {
 	color_eyre::install().unwrap();
 	let days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-	let today = time::OffsetDateTime::now_local().unwrap().weekday();
+	let today = time::OffsetDateTime::now_local()?.weekday();
 
 	let current_day = match args().nth(1) {
 		Some(value) => {
@@ -48,7 +50,7 @@ fn main() {
 	let (menus, day) = {
 		let mut menu = None;
 		for query_param in week_days {
-			let menus = fetch_menus(query_param).unwrap();
+			let menus = fetch_menus(query_param)?;
 			if Menu::count_meals(menus.iter()) == 0 {
 				eprintln!("No food for {query_param}, picking next possible date");
 				continue;
@@ -57,10 +59,10 @@ fn main() {
 			break;
 		}
 		menu
-	}.expect("No menus in weekdays at all");
+	}.context("No menus in any weekday found")?;
 
-	let longest_meal_name = Menu::longest_menu_names(&menus);
-	let most_expensive_price = Menu::most_expensive_meals(&menus);
+	let longest_meal_name = Menu::longest_menu_names(&menus)?;
+	let most_expensive_price = Menu::most_expensive_meals(&menus)?;
 
 	COLOR.get_or_init(|| {
 		if std::env::var("NO_COLOR").is_ok() {
@@ -73,6 +75,7 @@ fn main() {
 	render_meta(longest_meal_name, &day);
 
 	render_menus(menus, longest_meal_name, most_expensive_price, weekday_from_str(day));
+	Ok(())
 }
 
 fn weekday_from_str(input: &str) -> Weekday {
