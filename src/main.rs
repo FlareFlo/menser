@@ -7,10 +7,9 @@ mod opening_hours;
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
 use std::env::{args};
-use std::process::exit;
 use std::sync::OnceLock;
 use cli_table::ColorChoice;
-use color_eyre::eyre::ContextCompat;
+use color_eyre::eyre::{ContextCompat, eyre};
 use color_eyre::Report;
 use time::Weekday;
 use crate::api_interactions::fetch_menus;
@@ -18,7 +17,7 @@ use crate::api_schema::{Menu};
 use crate::table_formatting::{render_menus, render_meta};
 
 fn main() -> Result<(), Report> {
-	color_eyre::install().unwrap();
+	color_eyre::install()?;
 	let days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 	let today = time::OffsetDateTime::now_local()?.weekday();
 
@@ -35,8 +34,11 @@ fn main() -> Result<(), Report> {
 	};
 
 	if !days.contains(&current_day.as_str()) {
-		eprintln!("Unrecognized day/option: {}", args().nth(1).unwrap_or("".to_owned()));
-		exit(1);
+		return if let Some(arg) = args().nth(1) {
+			Err(eyre!("Unrecognized day/option: {}", arg))
+		} else {
+			Err(eyre!("Infallible. This is an error worth reporting."))
+		}
 	}
 
 	let week_days = days
@@ -72,9 +74,9 @@ fn main() -> Result<(), Report> {
 		}
 	});
 
-	render_meta(longest_meal_name, &day);
+	render_meta(longest_meal_name, &day)?;
 
-	render_menus(menus, longest_meal_name, most_expensive_price, weekday_from_str(day));
+	render_menus(menus, longest_meal_name, most_expensive_price, weekday_from_str(day))?;
 	Ok(())
 }
 

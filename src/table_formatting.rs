@@ -1,23 +1,25 @@
 use cli_table::{Cell, Color, print_stdout, Style, Table};
 use cli_table::Color::Rgb;
 use cli_table::format::{Justify};
+use color_eyre::eyre::ContextCompat;
+use color_eyre::Report;
 use pad::PadStr;
 use time::Weekday;
 use crate::api_schema::MenuItem;
 use crate::{COLOR, constants};
 
-pub fn render_meta(longest_meal_name: usize, day: &str) {
+pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 	let meta = vec![vec![day.cell(), "".cell()]]
 		.table()
 		.title(vec![
 			"Fetched from".pad_to_width(longest_meal_name).cell().foreground_color(Some(Color::Cyan)),
 			"".pad_to_width(7).cell(),
 		])
-		.color_choice(*COLOR.get().unwrap());
-	print_stdout(meta).unwrap();
+		.color_choice(*COLOR.get().context("COLOR was unset")?);
+	Ok(print_stdout(meta)?)
 }
 
-pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_meal_name: usize, most_expensive_price: f64, weekday: Weekday) {
+pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_meal_name: usize, most_expensive_price: f64, weekday: Weekday) -> Result<(), Report> {
 	let compute_price_color = |price: f64| {
 		let lerp_color = |x: f64| (1.1 * x + 33.0).round() as u8;
 		let lerp_price = |x: f64| (x - constants::LOWER_PRICE_THRESHOLD) / (most_expensive_price - constants::LOWER_PRICE_THRESHOLD) * 100.0;
@@ -25,7 +27,7 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 	};
 
 	for (menu, (_, mensa_name)) in menus {
-		let formatted_opening_hours = menu.meals.iter().next().map(|e| e.location.format_opening_hours(weekday)).unwrap_or(String::new());
+		let formatted_opening_hours = menu.meals.iter().next().map(|e| e.location.format_opening_hours(weekday)).context("Zero meals found for opening hours")?;
 		let filtered_meals_count = menu.count_filtered_meals();
 
 		let table = menu.meals
@@ -54,10 +56,11 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 				"Price €".cell()
 					.foreground_color(Some(Color::Cyan)),
 			])
-			.color_choice(*COLOR.get().unwrap());
+			.color_choice(*COLOR.get().context("COLOR was unset")?);
 
-		print_stdout(table).unwrap();
+		print_stdout(table)?;
 	}
+	Ok(())
 }
 
 fn compute_cell_color_from_name(name: &str) -> Color {
