@@ -38,7 +38,7 @@ fn main() -> Result<(), Report> {
 			Err(eyre!("Unrecognized day/option: {}", arg))
 		} else {
 			Err(eyre!("Infallible. This is an error worth reporting."))
-		}
+		};
 	}
 
 	let week_days = days
@@ -49,7 +49,7 @@ fn main() -> Result<(), Report> {
 		.collect::<Vec<_>>();
 
 	// Fetch menus from today through all weekdays until a valid menu is found
-	let (menus, day) = {
+	let (mut menus, day) = {
 		let mut menu = None;
 		for query_param in week_days {
 			let menus = fetch_menus(query_param)?;
@@ -62,6 +62,13 @@ fn main() -> Result<(), Report> {
 		}
 		menu
 	}.context("No menus in any weekday found")?;
+
+	for menu in &menus {
+		if menu.0.meals.is_empty() {
+			eprintln!("No meals listed for {}", menu.1.1)
+		}
+	}
+	menus = menus.into_iter().filter(|e|!e.0.meals.is_empty()).collect(); // Filter places without any food
 
 	let longest_meal_name = Menu::longest_menu_names(&menus)?;
 	let most_expensive_price = Menu::most_expensive_meals(&menus)?;
