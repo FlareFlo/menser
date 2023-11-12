@@ -6,6 +6,7 @@ use serde_with::serde_as;
 use crate::constants;
 use crate::opening_hours::Location;
 
+#[derive(Clone, Debug)]
 pub struct MenuItem {
 	pub menu: Menu,
 	pub mensa_id: usize,
