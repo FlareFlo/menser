@@ -17,11 +17,8 @@ impl Menu {
 	pub fn longest_menu_name(&self) -> Result<usize, Report> {
 		let res = self.meals
 			.iter()
-			.max_by(|lhs, rhs|
-				lhs.name.len().cmp(&rhs.name.len())
-			).context("Found zero meals")?
-			.name
-			.len();
+			.map(|e|e.name.len())
+			.max().context("Found zero meals")?;
 		Ok(res)
 	}
 	pub fn longest_menu_names(menus: &[MenuItem]) -> Result<usize, Report> {
