@@ -31,10 +31,7 @@ pub fn render_menus<'a>(
 		Rgb(lerp_color(lerp_price(price)), lerp_color(100.0 - lerp_price(price)), 33)
 	};
 
-	for MenuItem { menu, mensa_name,..} in menus {
-		let formatted_opening_hours = menu.meals.iter().next().map(|e| e.location.format_opening_hours(weekday)).context("Zero meals found for opening hours")?;
-		let filtered_meals_count = menu.count_filtered_meals();
-
+	for menu_item in menus {
 		let meals = |meal: &Meal|
 			vec![
 				emojify_name(meal.name.clone()).pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
@@ -45,11 +42,7 @@ pub fn render_menus<'a>(
 				meal.price.student.cell().justify(Justify::Right).foreground_color(Some(compute_price_color(meal.price.student))),
 			];
 
-		let title = format!("{mensa_name} | (excluding {filtered_meals_count} item{} less than {}€) | open: {formatted_opening_hours}{}",
-							if filtered_meals_count > 1 { "s" } else { "" },
-							constants::LOWER_PRICE_THRESHOLD,
-							if filtered_meals_count == 0 { " | (presumed closed)" } else { "" }
-		);
+		let title = menu_item.format_title(weekday)?;
 
 		let title = vec![
 			title.as_str()
@@ -60,7 +53,7 @@ pub fn render_menus<'a>(
 				.foreground_color(Some(Color::Cyan)),
 		];
 
-		let table = menu.meals
+		let table = menu_item.menu.meals
 			.iter()
 			.filter(|meal| meal.price.student > constants::LOWER_PRICE_THRESHOLD)
 			.map(meals)

@@ -13,7 +13,7 @@ use color_eyre::eyre::{ContextCompat, eyre};
 use color_eyre::Report;
 use time::Weekday;
 use crate::api_interactions::fetch_menus;
-use crate::api_schema::{Menu};
+use crate::api_schema::{Menu, MenuItem};
 use crate::table_formatting::{render_menus, render_meta};
 
 fn main() -> Result<(), Report> {
@@ -70,7 +70,9 @@ fn main() -> Result<(), Report> {
 	}
 	menus = menus.into_iter().filter(|e|!e.menu.meals.is_empty()).collect(); // Filter places without any food
 
-	let longest_meal_name = Menu::longest_menu_names(&menus)?;
+	let weekday =  weekday_from_str(day);
+
+	let longest_meal_name = MenuItem::longest_menu_name(&menus, weekday)?;
 	let most_expensive_price = Menu::most_expensive_meals(&menus)?;
 
 	COLOR.get_or_init(|| {
@@ -83,7 +85,7 @@ fn main() -> Result<(), Report> {
 
 	render_meta(longest_meal_name, &day)?;
 
-	render_menus(menus, longest_meal_name, most_expensive_price, weekday_from_str(day))?;
+	render_menus(menus, longest_meal_name, most_expensive_price, weekday)?;
 	Ok(())
 }
 
