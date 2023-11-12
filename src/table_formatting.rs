@@ -19,7 +19,12 @@ pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 	Ok(print_stdout(meta)?)
 }
 
-pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_meal_name: usize, most_expensive_price: f64, weekday: Weekday) -> Result<(), Report> {
+pub fn render_menus<'a>(
+	menus: impl IntoIterator<Item=MenuItem<'a>>,
+	longest_meal_name: usize,
+	most_expensive_price: f64,
+	weekday: Weekday
+) -> Result<(), Report> {
 	let compute_price_color = |price: f64| {
 		let lerp_color = |x: f64| (1.1 * x + 33.0).round() as u8;
 		let lerp_price = |x: f64| (x - constants::LOWER_PRICE_THRESHOLD) / (most_expensive_price - constants::LOWER_PRICE_THRESHOLD) * 100.0;
@@ -40,12 +45,14 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 				meal.price.student.cell().justify(Justify::Right).foreground_color(Some(compute_price_color(meal.price.student))),
 			];
 
-		let titles = vec![
-			format!("{mensa_name} | (excluding {filtered_meals_count} item{} less than {}€) | open: {formatted_opening_hours}{}",
-					if filtered_meals_count > 1 { "s" } else { "" },
-					constants::LOWER_PRICE_THRESHOLD,
-					if filtered_meals_count == 0 { " | (presumed closed)" } else { "" }
-			).as_str()
+		let title = format!("{mensa_name} | (excluding {filtered_meals_count} item{} less than {}€) | open: {formatted_opening_hours}{}",
+							if filtered_meals_count > 1 { "s" } else { "" },
+							constants::LOWER_PRICE_THRESHOLD,
+							if filtered_meals_count == 0 { " | (presumed closed)" } else { "" }
+		);
+
+		let title = vec![
+			title.as_str()
 				.pad_to_width(longest_meal_name)
 				.cell()
 				.foreground_color(Some(Color::Cyan)),
@@ -59,7 +66,7 @@ pub fn render_menus<'a>(menus: impl IntoIterator<Item=MenuItem<'a>>, longest_mea
 			.map(meals)
 			.collect::<Vec<_>>()
 			.table()
-			.title(titles)
+			.title(title)
 			.color_choice(*COLOR.get().context("COLOR was unset")?);
 
 		print_stdout(table)?;
