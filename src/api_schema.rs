@@ -6,7 +6,11 @@ use serde_with::serde_as;
 use crate::constants;
 use crate::opening_hours::Location;
 
-pub type MenuItem<'a> = (Menu, &'a (usize, &'a str));
+pub struct MenuItem {
+	pub menu: Menu,
+	pub mensa_id: usize,
+	pub mensa_name: String,
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Menu {
@@ -23,7 +27,7 @@ impl Menu {
 	}
 	pub fn longest_menu_names(menus: &[MenuItem]) -> Result<usize, Report> {
 		let res = menus.iter()
-			.map(|e|e.0.longest_menu_name())
+			.map(|e|e.menu.longest_menu_name())
 			.collect::<Result<Vec<usize>, Report>>()?
 			.into_iter()
 			.max()
@@ -41,7 +45,7 @@ impl Menu {
 	}
 	pub fn most_expensive_meals(menus: &[MenuItem]) -> Result<f64, Report> {
 		let res = menus.iter()
-			.map(|e|e.0.most_expensive_meal())
+			.map(|e|e.menu.most_expensive_meal())
 			.collect::<Result<Vec<f64>, Report>>()?
 			.into_iter()
 			.max_by(|l, r|l.total_cmp(r))
@@ -49,8 +53,8 @@ impl Menu {
 		Ok(res)
 	}
 
-	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MenuItem<'a>>) -> usize {
-		menus.map(|menu|menu.0.meals.len()).sum()
+	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MenuItem>) -> usize {
+		menus.map(|menu|menu.menu.meals.len()).sum()
 	}
 
 	pub fn count_filtered_meals(&self) -> usize {

@@ -64,11 +64,11 @@ fn main() -> Result<(), Report> {
 	}.context("No menus in any weekday found")?;
 
 	for menu in &menus {
-		if menu.0.meals.is_empty() {
-			eprintln!("No meals listed for {}", menu.1.1)
+		if menu.menu.meals.is_empty() {
+			eprintln!("No meals listed for {}", menu.mensa_id)
 		}
 	}
-	menus = menus.into_iter().filter(|e|!e.0.meals.is_empty()).collect(); // Filter places without any food
+	menus = menus.into_iter().filter(|e|!e.menu.meals.is_empty()).collect(); // Filter places without any food
 
 	let longest_meal_name = Menu::longest_menu_names(&menus)?;
 	let most_expensive_price = Menu::most_expensive_meals(&menus)?;

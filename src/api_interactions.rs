@@ -9,7 +9,7 @@ pub fn format_todays_menu_url(id: usize, day: &str) -> String {
 	format!("{}/v1/locations/{id}/menu/{}", constants::BASE_DOMAIN, day)
 }
 
-pub fn fetch_menus<'a>(day: &str) -> Result<Vec<MenuItem<'a>>, Report> {
+pub fn fetch_menus<'a>(day: &str) -> Result<Vec<MenuItem>, Report> {
 	let mut threads = vec![];
 	for i in TO_FETCH {
 		// We own the memory for day here, to safely pass it to the threads
@@ -22,7 +22,14 @@ pub fn fetch_menus<'a>(day: &str) -> Result<Vec<MenuItem<'a>>, Report> {
 	for thread in threads {
 		joined.push(thread.join().map_err(|e|Report::msg(format!("Failed to join thread: {:?}", e)))??);
 	}
-	Ok(joined.into_iter().zip(TO_FETCH.iter()).collect())
+	Ok(joined.into_iter()
+		.zip(TO_FETCH.iter())
+		.map(|e|MenuItem {
+			menu: e.0,
+			mensa_id: e.1.0,
+			mensa_name: e.1.1.to_owned(),
+		})
+		.collect())
 }
 
 

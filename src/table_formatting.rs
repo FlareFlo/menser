@@ -20,7 +20,7 @@ pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 }
 
 pub fn render_menus<'a>(
-	menus: impl IntoIterator<Item=MenuItem<'a>>,
+	menus: impl IntoIterator<Item=MenuItem>,
 	longest_meal_name: usize,
 	most_expensive_price: f64,
 	weekday: Weekday
@@ -31,7 +31,7 @@ pub fn render_menus<'a>(
 		Rgb(lerp_color(lerp_price(price)), lerp_color(100.0 - lerp_price(price)), 33)
 	};
 
-	for (menu, (_, mensa_name)) in menus {
+	for MenuItem { menu, mensa_name,..} in menus {
 		let formatted_opening_hours = menu.meals.iter().next().map(|e| e.location.format_opening_hours(weekday)).context("Zero meals found for opening hours")?;
 		let filtered_meals_count = menu.count_filtered_meals();
 
