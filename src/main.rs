@@ -3,6 +3,8 @@ mod constants;
 mod table_formatting;
 mod api_interactions;
 mod opening_hours;
+mod menu_item_impl;
+mod menu_impl;
 
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
