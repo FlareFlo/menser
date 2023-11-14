@@ -1,5 +1,5 @@
 # Menser 😋
-Fetches and displays meals from the stw-on API
+> Fetches and displays meals from the stw-on API for the CLI
 
 # Installation
 
