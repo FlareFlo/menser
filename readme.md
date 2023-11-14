@@ -1,6 +1,5 @@
 # Menser 😋
-
-PRs welcome.
+Fetches and displays meals from the stw-on API
 
 # Installation
 
