@@ -26,13 +26,17 @@ opt-level = 3
 codegen-units = 4
 lto = "thin"
 
+[features]
+default = ["ureq"]
+ureq = ["dep:ureq"]
+
 [dependencies]
 cli-table = "0.4.7"
 pad = "0.1.6"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["std"]}
 serde_with = { version = "3.0.0", default-features = false, features = ["macros"]}
-ureq = {version = "2.6.2",  default-features = false, features = ["tls", "json"]}
+ureq = {version = "2.6.2",  default-features = false, features = ["tls", "json"], optional = true}
 time = { version = "0.3.23", default-features = false, features = ["local-offset"] }
 color-eyre = { version = "0.6.2", default-features = false }
 

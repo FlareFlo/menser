@@ -3,6 +3,7 @@ use crate::api_schema::MenuItem;
 use crate::constants;
 use crate::constants::TO_FETCH;
 use crate::api_schema::{Menu};
+use crate::rest_api_impl::request_menu;
 
 
 pub fn format_todays_menu_url(id: usize, day: &str) -> String {
@@ -30,12 +31,4 @@ pub fn fetch_menus<'a>(day: &str) -> Result<Vec<MenuItem>, Report> {
 			mensa_name: e.1.1.to_owned(),
 		})
 		.collect())
-}
-
-
-
-pub fn request_menu(id: usize, day: String) -> Result<Menu, Report> {
-	let req = ureq::get(&format_todays_menu_url(id, &day)).call()?;
-
-	Ok(req.into_json()?)
 }

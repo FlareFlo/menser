@@ -5,6 +5,7 @@ mod api_interactions;
 mod opening_hours;
 mod menu_item_impl;
 mod menu_impl;
+mod rest_api_impl;
 
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
