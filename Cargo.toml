@@ -27,8 +27,9 @@ codegen-units = 4
 lto = "thin"
 
 [features]
-default = ["ureq"]
+default = ["curl"]
 ureq = ["dep:ureq"]
+curl = []
 
 [dependencies]
 cli-table = "0.4.7"
