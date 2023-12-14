@@ -1,6 +1,8 @@
 # Menser 😋
 > Fetches and displays meals from the stw-on API for the CLI
 
+[![asciicast](https://asciinema.org/a/da1Hxj1je2jgkyThf42HSFdXm.svg)](https://asciinema.org/a/da1Hxj1je2jgkyThf42HSFdXm)
+
 # Installation
 
 ### From source via [crates.io](https://crates.io/crates/menser)
