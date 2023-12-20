@@ -9,7 +9,10 @@ mod rest_api_impl;
 
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
+use std::env;
 use std::env::{args};
+use std::str::FromStr;
+use std::sync::atomic::Ordering::Relaxed;
 use std::sync::OnceLock;
 use cli_table::ColorChoice;
 use color_eyre::eyre::{ContextCompat, eyre};
@@ -17,10 +20,14 @@ use color_eyre::Report;
 use time::Weekday;
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{Menu, MenuItem};
+use crate::constants::LOWER_PRICE_THRESHOLD;
 use crate::table_formatting::{render_menus, render_meta};
 
 fn main() -> Result<(), Report> {
 	color_eyre::install()?;
+
+	let _ = env::var("MENSA_LIMIT").map(|e|LOWER_PRICE_THRESHOLD.store((f64::from_str(&e).unwrap() * 100.0 ) as u32, Relaxed));
+
 	let days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 	let today = time::OffsetDateTime::now_local()?.weekday();
 
