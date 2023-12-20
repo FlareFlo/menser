@@ -36,7 +36,7 @@ impl Menu {
 
 	pub fn count_filtered_meals(&self) -> usize {
 		self.meals.iter()
-			.filter(|meal| meal.price.student <= constants::LOWER_PRICE_THRESHOLD && meal.price.student != 0.0)
+			.filter(|meal| meal.price.student <= constants::get_lower_threshold() && meal.price.student != 0.0)
 			.count()
 	}
 }

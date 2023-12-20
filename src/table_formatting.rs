@@ -27,7 +27,7 @@ pub fn render_menus<'a>(
 ) -> Result<(), Report> {
 	let compute_price_color = |price: f64| {
 		let lerp_color = |x: f64| (1.1 * x + 33.0).round() as u8;
-		let lerp_price = |x: f64| (x - constants::LOWER_PRICE_THRESHOLD) / (most_expensive_price - constants::LOWER_PRICE_THRESHOLD) * 100.0;
+		let lerp_price = |x: f64| (x - constants::get_lower_threshold()) / (most_expensive_price - constants::get_lower_threshold()) * 100.0;
 		Rgb(lerp_color(lerp_price(price)), lerp_color(100.0 - lerp_price(price)), 33)
 	};
 
@@ -55,7 +55,7 @@ pub fn render_menus<'a>(
 
 		let table = menu_item.menu.meals
 			.iter()
-			.filter(|meal| meal.price.student > constants::LOWER_PRICE_THRESHOLD)
+			.filter(|meal| meal.price.student > constants::get_lower_threshold())
 			.map(meals)
 			.collect::<Vec<_>>()
 			.table()

@@ -30,7 +30,7 @@ impl MenuItem {
 		Ok(format!("{} | (excluding {filtered_meals_count} item{} less than {}€) | open: {formatted_opening_hours}{}",
 				   self.mensa_name,
 				   if filtered_meals_count > 1 { "s" } else { "" },
-				   constants::LOWER_PRICE_THRESHOLD,
+				   constants::get_lower_threshold(),
 				   if filtered_meals_count == 0 { " | (presumed closed)" } else { "" }
 		))
 	}
