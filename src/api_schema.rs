@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
-use serde_with::DisplayFromStr;
-use serde_with::serde_as;
+use std::str::FromStr;
+
+use serde::{Deserialize, Deserializer, Serialize};
+
 use crate::opening_hours::Location;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct MenuItem {
 	pub menu: Menu,
 	pub mensa_id: usize,
@@ -11,12 +12,12 @@ pub struct MenuItem {
 }
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Menu {
 	pub meals: Vec<Meal>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Meal {
 	pub id: usize,
 	pub name: String,
@@ -31,19 +32,25 @@ impl Meal {
 	}
 }
 
-#[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub struct Price {
-	#[serde_as(as = "DisplayFromStr")]
-	pub student: f64,
+	#[serde(deserialize_with = "price_deserialize" )]
+	pub student: u16,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+fn price_deserialize<'de, D: Deserializer<'de>>(
+	deserializer: D,
+) -> Result<u16, D::Error> {
+	let string = String::deserialize(deserializer)?;
+	Ok((f64::from_str(&string).map_err(|e|serde::de::Error::custom(e))? * 100.0) as u16)
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Tags {
 	pub categories: Vec<Category>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub struct Category {
 	pub name: String,
 }

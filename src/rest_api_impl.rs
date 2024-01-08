@@ -1,18 +1,17 @@
+#[cfg(feature = "curl")]
+pub use crate::rest_api_impl::curl::request_menu;
+#[cfg(feature = "ureq")]
+pub use crate::rest_api_impl::ureq::request_menu;
+
 #[cfg(feature = "ureq")]
 #[cfg(feature = "curl")]
 compile_error!("Curl and ureq cannot be enabled together");
 
 
 #[cfg(feature = "ureq")]
-pub use crate::rest_api_impl::ureq::request_menu;
-
-
-#[cfg(feature = "curl")]
-pub use crate::rest_api_impl::curl::request_menu;
-
-#[cfg(feature = "ureq")]
 mod ureq {
 	use color_eyre::Report;
+
 	use crate::api_interactions::format_todays_menu_url;
 	use crate::api_schema::Menu;
 
@@ -26,7 +25,9 @@ mod ureq {
 #[cfg(feature = "curl")]
 mod curl {
 	use std::process::Command;
+
 	use color_eyre::Report;
+
 	use crate::api_interactions::format_todays_menu_url;
 	use crate::api_schema::Menu;
 

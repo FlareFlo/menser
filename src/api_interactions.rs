@@ -1,13 +1,13 @@
 use color_eyre::Report;
+
+use crate::api_schema::Menu;
 use crate::api_schema::MenuItem;
 use crate::constants;
 use crate::constants::TO_FETCH;
-use crate::api_schema::{Menu};
 use crate::rest_api_impl::request_menu;
 
-
 pub fn format_todays_menu_url(id: usize, day: &str) -> String {
-	format!("{}/v1/locations/{id}/menu/{}", constants::BASE_DOMAIN, day)
+	format!("{}/v1/locations/{id}/menu/{}?time=all", constants::BASE_DOMAIN, day)
 }
 
 pub fn fetch_menus<'a>(day: &str) -> Result<Vec<MenuItem>, Report> {

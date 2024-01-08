@@ -1,6 +1,7 @@
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Report;
 use time::Weekday;
+
 use crate::api_schema::MenuItem;
 use crate::constants;
 
@@ -30,7 +31,7 @@ impl MenuItem {
 		Ok(format!("{} | (excluding {filtered_meals_count} item{} less than {}€) | open: {formatted_opening_hours}{}",
 				   self.mensa_name,
 				   if filtered_meals_count > 1 { "s" } else { "" },
-				   constants::get_lower_threshold(),
+				   constants::get_lower_threshold_float(),
 				   if filtered_meals_count == 0 { " | (presumed closed)" } else { "" }
 		))
 	}

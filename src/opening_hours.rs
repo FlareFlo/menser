@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 use time::Weekday;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Location {
 	pub opening_hours: Vec<OpeningHours>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct OpeningHours {
 	pub start_day: usize,
 	pub end_day: usize,

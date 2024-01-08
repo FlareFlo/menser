@@ -1,5 +1,6 @@
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Report;
+
 use crate::api_schema::{Menu, MenuItem};
 use crate::constants;
 
@@ -15,10 +16,9 @@ impl Menu {
 	pub fn most_expensive_meal(&self) -> Result<f64, Report> {
 		Ok(self.meals
 			.iter()
-			.max_by(|lhs, rhs|
-				lhs.price.student.total_cmp(&rhs.price.student)
-			).context("Found zero meals")?
-			.price.student)
+			.max_by(|left, right|left.price.student.cmp(&right.price.student))
+			.context("Found zero meals")?
+			.price.student as f64 / 100.0)
 	}
 	pub fn most_expensive_meals(menus: &[MenuItem]) -> Result<f64, Report> {
 		let res = menus.iter()
@@ -36,7 +36,7 @@ impl Menu {
 
 	pub fn count_filtered_meals(&self) -> usize {
 		self.meals.iter()
-			.filter(|meal| meal.price.student <= constants::get_lower_threshold() && meal.price.student != 0.0)
+			.filter(|meal| meal.price.student <= constants::get_lower_threshold_int() && meal.price.student != 0)
 			.count()
 	}
 }
