@@ -15,10 +15,19 @@ use crate::api_schema::{Menu, MenuItem};
 use crate::constants::LOWER_PRICE_THRESHOLD;
 use crate::table_formatting::{render_menus, render_meta};
 
+/// Structs serialized from JSON API to rust representation
 mod api_schema;
+
+/// Constants used everywhere
 mod constants;
+
+/// Formats and prints output-tables
 mod table_formatting;
+
+/// Functions for invoking the API
 mod api_interactions;
+
+/// Logic for formatting and printing opening hours
 mod opening_hours;
 mod menu_item_impl;
 mod menu_impl;
