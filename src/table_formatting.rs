@@ -8,12 +8,13 @@ use time::Weekday;
 
 use crate::{COLOR, constants};
 use crate::api_schema::{Meal, MenuItem};
+use crate::constants::colors;
 
 pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 	let meta = vec![vec![day.cell(), "".cell()]]
 		.table()
 		.title(vec![
-			"Fetched from".pad_to_width(longest_meal_name).cell().foreground_color(Some(Color::Cyan)),
+			"Fetched from".pad_to_width(longest_meal_name).cell().foreground_color(Some(colors::TITLE)),
 			"".pad_to_width(7).cell(),
 		])
 		.color_choice(*COLOR.get().context("COLOR was unset")?);
@@ -37,7 +38,7 @@ pub fn render_menus<'a>(
 		let meals = |meal: &Meal|
 			vec![
 				emojify_name(meal.name.clone()).pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
-					Some(Rgb(255, 233, 0))
+					Some(colors::LOWER_SAXONY)
 				} else {
 					Some(compute_cell_color_from_name(meal.name.as_str()))
 				}),
@@ -50,9 +51,9 @@ pub fn render_menus<'a>(
 			title.as_str()
 				.pad_to_width(longest_meal_name)
 				.cell()
-				.foreground_color(Some(Color::Cyan)),
+				.foreground_color(Some(colors::TITLE)),
 			"Price €".cell()
-				.foreground_color(Some(Color::Cyan)),
+				.foreground_color(Some(colors::TITLE)),
 		];
 
 		let table = menu_item.menu.meals
@@ -72,10 +73,10 @@ pub fn render_menus<'a>(
 fn compute_cell_color_from_name(name: &str) -> Color {
 	let lc = name.to_lowercase();
 
-	if lc.contains("pizza") && !lc.contains("burger") { return Color::Magenta; }
+	if lc.contains("pizza") && !lc.contains("burger") { return colors::PIZZA; }
 
 
-	Color::Green
+	colors::DEFAULT_MEAL
 }
 
 fn emojify_name(mut name: String) -> String {

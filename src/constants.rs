@@ -20,3 +20,13 @@ pub fn get_lower_threshold_int() -> u16 {
 
 
 pub const BASE_DOMAIN: &str = "https://sls.api.stw-on.de";
+
+pub mod colors {
+	use cli_table::Color;
+	use cli_table::Color::Rgb;
+
+	pub const LOWER_SAXONY: Color = Rgb(255, 233, 0);
+	pub const PIZZA: Color = Color::Magenta;
+	pub const DEFAULT_MEAL: Color = Color::Green;
+	pub const TITLE: Color = Color::Cyan;
+}
