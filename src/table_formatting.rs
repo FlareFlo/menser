@@ -1,5 +1,4 @@
 use cli_table::{Cell, Color, print_stdout, Style, Table};
-use cli_table::Color::Rgb;
 use cli_table::format::Justify;
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Report;
@@ -8,7 +7,7 @@ use time::Weekday;
 
 use crate::{COLOR, constants};
 use crate::api_schema::{Meal, MensaMenu};
-use crate::constants::colors;
+use crate::constants::{colors, compute_price_color};
 
 pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 	let meta = vec![vec![day.cell(), "".cell()]]
@@ -27,13 +26,6 @@ pub fn render_menus<'a>(
 	most_expensive_price: f64,
 	weekday: Weekday
 ) -> Result<(), Report> {
-	let compute_price_color = |price: u16| {
-		let price = price as f64 / 100.0;
-		let lerp_color = |x: f64| (1.1 * x + 33.0).round() as u8;
-		let lerp_price = |x: f64| (x - constants::get_lower_threshold_float()) / (most_expensive_price - constants::get_lower_threshold_float()) * 100.0;
-		Rgb(lerp_color(lerp_price(price)), lerp_color(100.0 - lerp_price(price)), 33)
-	};
-
 	for menu_item in menus {
 		let meals = |meal: &Meal|
 			vec![
@@ -42,7 +34,7 @@ pub fn render_menus<'a>(
 				} else {
 					Some(compute_cell_color_from_name(meal.name.as_str()))
 				}),
-				(meal.price.student as f64 / 100.0).cell().justify(Justify::Right).foreground_color(Some(compute_price_color(meal.price.student))),
+				(meal.price.student as f64 / 100.0).cell().justify(Justify::Right).foreground_color(Some(compute_price_color(meal.price.student, most_expensive_price))),
 			];
 
 		let title = menu_item.format_title(weekday)?;
