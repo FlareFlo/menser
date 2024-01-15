@@ -20,7 +20,7 @@ pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 	Ok(print_stdout(meta)?)
 }
 
-pub fn render_menus<'a>(
+pub fn render_menus(
 	menus: impl IntoIterator<Item=MensaMenu>,
 	longest_meal_name: usize,
 	most_expensive_price: f64,
