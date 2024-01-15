@@ -1,5 +1,6 @@
 use std::sync::atomic::AtomicU16;
 use std::sync::atomic::Ordering::Relaxed;
+
 use cli_table::Color;
 use cli_table::Color::Rgb;
 

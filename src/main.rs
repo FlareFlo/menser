@@ -11,7 +11,7 @@ use itertools::Itertools;
 use time::Weekday;
 
 use crate::api_interactions::fetch_menus;
-use crate::api_schema::{Menu, MensaMenu};
+use crate::api_schema::{MensaMenu, Menu};
 use crate::constants::LOWER_PRICE_THRESHOLD;
 use crate::table_formatting::{render_menus, render_meta};
 
@@ -38,7 +38,7 @@ static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 fn main() -> Result<(), Report> {
 	color_eyre::install()?;
 
-	let _ = env::var("MENSA_LIMIT").map(|e|LOWER_PRICE_THRESHOLD.store(u16::from_str(&e).unwrap(), Relaxed));
+	let _ = env::var("MENSA_LIMIT").map(|e| LOWER_PRICE_THRESHOLD.store(u16::from_str(&e).unwrap(), Relaxed));
 
 	let days = vec!["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 	let today = time::OffsetDateTime::now_local()?.weekday();
@@ -91,11 +91,11 @@ fn main() -> Result<(), Report> {
 		}
 	}
 	menus = menus.into_iter()
-		.filter(|e|!e.menu.meals.is_empty())
+		.filter(|e| !e.menu.meals.is_empty())
 		.unique()
 		.collect(); // Filter places without any food
 
-	let weekday =  weekday_from_str(day);
+	let weekday = weekday_from_str(day);
 
 	let longest_meal_name = MensaMenu::longest_menu_name(&menus)?;
 	let most_expensive_price = Menu::most_expensive_meals(&menus)?;

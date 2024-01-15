@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+
 use cli_table::{Cell, Color, print_stdout, Style, Table};
 use cli_table::format::Justify;
 use color_eyre::eyre::ContextCompat;
@@ -26,18 +27,18 @@ pub fn render_menus(
 	menus: impl IntoIterator<Item=MensaMenu>,
 	longest_meal_name: usize,
 	most_expensive_price: f64,
-	weekday: Weekday
+	weekday: Weekday,
 ) -> Result<(), Report> {
 	for menu_item in menus {
 		let meal_opening_hours = menu_item.menu.meals
 			.iter()
-			.map(|meal|(meal.todays_opening_hours(weekday), meal));
+			.map(|meal| (meal.todays_opening_hours(weekday), meal));
 		let mut grouped_by_opening_hours: HashMap<&OpeningHours, Vec<&Meal>> = HashMap::new();
 
 		for (hours, meal) in meal_opening_hours {
 			for open_for in hours {
 				grouped_by_opening_hours.entry(open_for)
-					.and_modify(|e|e.push(meal))
+					.and_modify(|e| e.push(meal))
 					.or_insert(vec![meal]);
 			}
 		}

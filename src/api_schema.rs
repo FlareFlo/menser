@@ -33,15 +33,15 @@ impl Meal {
 	}
 
 
-	pub fn todays_opening_hours(&self, day: Weekday) -> impl Iterator<Item = &OpeningHours> {
+	pub fn todays_opening_hours(&self, day: Weekday) -> impl Iterator<Item=&OpeningHours> {
 		self.location.opening_hours.iter()
-			.filter(move |e|(e.start_day..=e.end_day).contains(&(day.number_days_from_sunday() as usize)))
+			.filter(move |e| (e.start_day..=e.end_day).contains(&(day.number_days_from_sunday() as usize)))
 	}
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub struct Price {
-	#[serde(deserialize_with = "price_deserialize" )]
+	#[serde(deserialize_with = "price_deserialize")]
 	pub student: u16,
 }
 
@@ -49,7 +49,7 @@ fn price_deserialize<'de, D: Deserializer<'de>>(
 	deserializer: D,
 ) -> Result<u16, D::Error> {
 	let string = String::deserialize(deserializer)?;
-	Ok((f64::from_str(&string).map_err(|e|serde::de::Error::custom(e))? * 100.0) as u16)
+	Ok((f64::from_str(&string).map_err(|e| serde::de::Error::custom(e))? * 100.0) as u16)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]

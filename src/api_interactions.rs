@@ -1,7 +1,7 @@
 use color_eyre::Report;
 
-use crate::api_schema::Menu;
 use crate::api_schema::MensaMenu;
+use crate::api_schema::Menu;
 use crate::constants;
 use crate::constants::TO_FETCH;
 use crate::rest_api_impl::request_menu;
@@ -15,13 +15,13 @@ pub fn fetch_menus<'a>(day: &str) -> Result<Vec<MensaMenu>, Report> {
 	for i in TO_FETCH {
 		// We own the memory for day here, to safely pass it to the threads
 		let day = day.to_owned();
-		threads.push(std::thread::spawn( move || {
+		threads.push(std::thread::spawn(move || {
 			request_menu(i.0, day)
 		}));
 	}
 	let mut joined: Vec<Menu> = vec![];
 	for thread in threads {
-		joined.push(thread.join().map_err(|e|Report::msg(format!("Failed to join thread: {:?}", e)))??);
+		joined.push(thread.join().map_err(|e| Report::msg(format!("Failed to join thread: {:?}", e)))??);
 	}
 	Ok(joined.into_iter()
 		.zip(TO_FETCH.iter())

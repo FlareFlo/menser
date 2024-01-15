@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+
 use serde::{Deserialize, Serialize};
 use time::Weekday;
 
@@ -17,10 +18,9 @@ pub struct OpeningHours {
 
 impl Location {
 	pub fn format_opening_hours(&self, weekday: Weekday) -> String {
-
 		self.opening_hours.iter()
-			.filter(|e|e.weekday_in_range(weekday))
-			.map(|e|e.to_string())
+			.filter(|e| e.weekday_in_range(weekday))
+			.map(|e| e.to_string())
 			.collect::<Vec<String>>()
 			.join(", ")
 	}
