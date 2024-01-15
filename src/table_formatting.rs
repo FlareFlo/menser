@@ -7,7 +7,7 @@ use pad::PadStr;
 use time::Weekday;
 
 use crate::{COLOR, constants};
-use crate::api_schema::{Meal, MenuItem};
+use crate::api_schema::{Meal, MensaMenu};
 use crate::constants::colors;
 
 pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
@@ -22,7 +22,7 @@ pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 }
 
 pub fn render_menus<'a>(
-	menus: impl IntoIterator<Item=MenuItem>,
+	menus: impl IntoIterator<Item=MensaMenu>,
 	longest_meal_name: usize,
 	most_expensive_price: f64,
 	weekday: Weekday

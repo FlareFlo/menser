@@ -1,7 +1,7 @@
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Report;
 
-use crate::api_schema::{Menu, MenuItem};
+use crate::api_schema::{Menu, MensaMenu};
 use crate::constants;
 
 impl Menu {
@@ -20,7 +20,7 @@ impl Menu {
 			.context("Found zero meals")?
 			.price.student as f64 / 100.0)
 	}
-	pub fn most_expensive_meals(menus: &[MenuItem]) -> Result<f64, Report> {
+	pub fn most_expensive_meals(menus: &[MensaMenu]) -> Result<f64, Report> {
 		let res = menus.iter()
 			.map(|e| e.menu.most_expensive_meal())
 			.collect::<Result<Vec<f64>, Report>>()?
@@ -30,7 +30,7 @@ impl Menu {
 		Ok(res)
 	}
 
-	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MenuItem>) -> usize {
+	pub fn count_meals<'a>(menus: impl Iterator<Item=&'a MensaMenu>) -> usize {
 		menus.map(|menu| menu.menu.meals.len()).sum()
 	}
 

@@ -5,7 +5,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use crate::opening_hours::Location;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct MenuItem {
+pub struct MensaMenu {
 	pub menu: Menu,
 	pub mensa_id: usize,
 	pub mensa_name: String,

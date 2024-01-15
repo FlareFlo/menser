@@ -2,10 +2,10 @@ use color_eyre::eyre::ContextCompat;
 use color_eyre::Report;
 use time::Weekday;
 
-use crate::api_schema::MenuItem;
+use crate::api_schema::MensaMenu;
 use crate::constants;
 
-impl MenuItem {
+impl MensaMenu {
 	// Needs weekday to compute opening hours
 	pub fn longest_menu_name(selfish: &[Self], weekday: Weekday) -> Result<usize, Report> {
 		let res = selfish.iter()

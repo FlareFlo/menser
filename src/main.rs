@@ -11,7 +11,7 @@ use itertools::Itertools;
 use time::Weekday;
 
 use crate::api_interactions::fetch_menus;
-use crate::api_schema::{Menu, MenuItem};
+use crate::api_schema::{Menu, MensaMenu};
 use crate::constants::LOWER_PRICE_THRESHOLD;
 use crate::table_formatting::{render_menus, render_meta};
 
@@ -97,7 +97,7 @@ fn main() -> Result<(), Report> {
 
 	let weekday =  weekday_from_str(day);
 
-	let longest_meal_name = MenuItem::longest_menu_name(&menus, weekday)?;
+	let longest_meal_name = MensaMenu::longest_menu_name(&menus, weekday)?;
 	let most_expensive_price = Menu::most_expensive_meals(&menus)?;
 
 	COLOR.get_or_init(|| {
