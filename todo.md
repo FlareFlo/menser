@@ -1,1 +1,2 @@
 - Sort/Mark meals by opening hours
+- Documentation... ugh
