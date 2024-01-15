@@ -92,7 +92,6 @@ fn main() -> Result<(), Report> {
 	}
 	menus = menus.into_iter()
 		.filter(|e| !e.menu.meals.is_empty())
-		.unique()
 		.collect(); // Filter places without any food
 
 	let weekday = weekday_from_str(day);
