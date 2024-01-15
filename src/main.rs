@@ -97,7 +97,7 @@ fn main() -> Result<(), Report> {
 
 	let weekday =  weekday_from_str(day);
 
-	let longest_meal_name = MensaMenu::longest_menu_name(&menus, weekday)?;
+	let longest_meal_name = MensaMenu::longest_menu_name(&menus)?;
 	let most_expensive_price = Menu::most_expensive_meals(&menus)?;
 
 	COLOR.get_or_init(|| {
