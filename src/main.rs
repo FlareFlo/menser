@@ -29,7 +29,7 @@ mod api_interactions;
 
 /// Logic for formatting and printing opening hours
 mod opening_hours;
-mod menu_item_impl;
+mod mensa_menu;
 mod menu_impl;
 mod rest_api_impl;
 
