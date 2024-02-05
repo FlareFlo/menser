@@ -32,18 +32,16 @@ pub fn render_menus(
 	for menu_item in menus {
 		let meal_opening_hours = menu_item.menu.meals
 			.iter()
-			.map(|meal| (meal.todays_opening_hours(weekday), meal));
-		let mut grouped_by_opening_hours: HashMap<&OpeningHours, Vec<&Meal>> = HashMap::new();
+			.map(|meal| (meal.time.clone(), meal));
+		let mut grouped_by_daytime: HashMap<String, Vec<&Meal>> = HashMap::new();
 
-		for (hours, meal) in meal_opening_hours {
-			for open_for in hours {
-				grouped_by_opening_hours.entry(open_for)
+		for (daytime, meal) in meal_opening_hours {
+				grouped_by_daytime.entry(daytime)
 					.and_modify(|e| e.push(meal))
 					.or_insert(vec![meal]);
-			}
 		}
 
-		for (opening_hours, meals) in grouped_by_opening_hours.into_iter() {
+		for (opening_hours, meals) in grouped_by_daytime.into_iter() {
 			let fmt_meals = |meal: &&Meal| {
 				vec![
 					emojify_name(meal.name.clone()).pad_to_width(longest_meal_name).as_str().cell().foreground_color(if meal.is_lower_saxony_menu() {
@@ -55,7 +53,7 @@ pub fn render_menus(
 				]
 			};
 
-			let title = menu_item.format_title(opening_hours)?;
+			let title = menu_item.format_title(&opening_hours)?;
 
 			let title = vec![
 				title.as_str()

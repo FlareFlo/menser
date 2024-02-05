@@ -25,6 +25,7 @@ pub struct Meal {
 	pub price: Price,
 	pub tags: Tags,
 	pub location: Location,
+	pub time: String,
 }
 
 impl Meal {

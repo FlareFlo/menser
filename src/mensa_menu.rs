@@ -17,13 +17,13 @@ impl MensaMenu {
 		let title = selfish.iter()
 			.next()
 			.context("Empty menu item vector")?
-			.format_title(&OpeningHours::formatting_dummy())?.len();
+			.format_title("noon")?.len();
 		Ok(res.max(title))
 	}
 
-	pub fn format_title(&self, opening_hours: &OpeningHours) -> Result<String, Report> {
+	pub fn format_title(&self, daytime: &str) -> Result<String, Report> {
 		let filtered_meals_count = self.menu.count_filtered_meals();
-		Ok(format!("{} | (excluding {filtered_meals_count} item{} less than {}€) | open: {opening_hours}{}",
+		Ok(format!("{} | (excluding {filtered_meals_count} item{} less than {}€) | open: {daytime}{}",
 				   self.mensa_name,
 				   if filtered_meals_count > 1 { "s" } else { "" },
 				   constants::get_lower_threshold_float(),
