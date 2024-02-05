@@ -2,8 +2,6 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Deserializer, Serialize};
 
-use crate::opening_hours::{Location};
-
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct MensaMenu {
 	pub menu: Menu,
@@ -23,7 +21,6 @@ pub struct Meal {
 	pub name: String,
 	pub price: Price,
 	pub tags: Tags,
-	pub location: Location,
 	pub time: String,
 }
 

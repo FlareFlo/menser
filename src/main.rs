@@ -25,8 +25,6 @@ mod table_formatting;
 /// Functions for invoking the API
 mod api_interactions;
 
-/// Logic for formatting and printing opening hours
-mod opening_hours;
 mod mensa_menu;
 mod menu_impl;
 mod rest_api_impl;
