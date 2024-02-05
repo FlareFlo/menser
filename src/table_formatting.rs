@@ -5,12 +5,10 @@ use cli_table::format::Justify;
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Report;
 use pad::PadStr;
-use time::Weekday;
 
 use crate::{COLOR, constants};
 use crate::api_schema::{Meal, MensaMenu};
 use crate::constants::{colors, compute_price_color};
-use crate::opening_hours::OpeningHours;
 
 pub fn render_meta(longest_meal_name: usize, day: &str) -> Result<(), Report> {
 	let meta = vec![vec![day.cell(), "".cell()]]
@@ -27,7 +25,6 @@ pub fn render_menus(
 	menus: impl IntoIterator<Item=MensaMenu>,
 	longest_meal_name: usize,
 	most_expensive_price: f64,
-	weekday: Weekday,
 ) -> Result<(), Report> {
 	for menu_item in menus {
 		let meal_opening_hours = menu_item.menu.meals

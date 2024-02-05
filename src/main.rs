@@ -7,8 +7,6 @@ use std::sync::OnceLock;
 use cli_table::ColorChoice;
 use color_eyre::eyre::{ContextCompat, eyre};
 use color_eyre::Report;
-use itertools::Itertools;
-use time::Weekday;
 
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{MensaMenu, Menu};
@@ -94,8 +92,6 @@ fn main() -> Result<(), Report> {
 		.filter(|e| !e.menu.meals.is_empty())
 		.collect(); // Filter places without any food
 
-	let weekday = weekday_from_str(day);
-
 	let longest_meal_name = MensaMenu::longest_menu_name(&menus)?;
 	let most_expensive_price = Menu::most_expensive_meals(&menus)?;
 
@@ -109,19 +105,6 @@ fn main() -> Result<(), Report> {
 
 	render_meta(longest_meal_name, &day)?;
 
-	render_menus(menus, longest_meal_name, most_expensive_price, weekday)?;
+	render_menus(menus, longest_meal_name, most_expensive_price)?;
 	Ok(())
-}
-
-fn weekday_from_str(input: &str) -> Weekday {
-	match input {
-		"monday" => Weekday::Monday,
-		"tuesday" => Weekday::Tuesday,
-		"wednesday" => Weekday::Wednesday,
-		"thursday" => Weekday::Thursday,
-		"friday" => Weekday::Friday,
-		"saturday" => Weekday::Saturday,
-		"sunday" => Weekday::Sunday,
-		_ => { panic!("Unrecognized weekday: {input}") }
-	}
 }

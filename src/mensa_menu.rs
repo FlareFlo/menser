@@ -3,7 +3,6 @@ use color_eyre::Report;
 
 use crate::api_schema::MensaMenu;
 use crate::constants;
-use crate::opening_hours::OpeningHours;
 
 impl MensaMenu {
 	// Needs weekday to compute opening hours

@@ -1,9 +1,8 @@
 use std::str::FromStr;
 
 use serde::{Deserialize, Deserializer, Serialize};
-use time::Weekday;
 
-use crate::opening_hours::{Location, OpeningHours};
+use crate::opening_hours::{Location};
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct MensaMenu {
@@ -31,12 +30,6 @@ pub struct Meal {
 impl Meal {
 	pub fn is_lower_saxony_menu(&self) -> bool {
 		self.tags.categories.contains(&Category { name: "Niedersachsen Menü".to_string() })
-	}
-
-
-	pub fn todays_opening_hours(&self, day: Weekday) -> impl Iterator<Item=&OpeningHours> {
-		self.location.opening_hours.iter()
-			.filter(move |e| (e.start_day..=e.end_day).contains(&(day.number_days_from_sunday() as usize)))
 	}
 }
 
