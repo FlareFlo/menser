@@ -12,6 +12,7 @@ use color_eyre::Report;
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{MensaMenu, Menu};
 use crate::constants::LOWER_PRICE_THRESHOLD;
+use crate::simple_argparse::argparse;
 use crate::table_formatting::{render_menus, render_meta};
 
 /// Structs serialized from JSON API to rust representation
@@ -30,11 +31,14 @@ mod localization;
 mod mensa_menu;
 mod menu_impl;
 mod rest_api_impl;
+mod simple_argparse;
 
 static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 
 fn main() -> Result<(), Report> {
     color_eyre::install()?;
+
+    let args = argparse()?;
 
     let _ = env::var("MENSA_LIMIT")
         .map(|e| LOWER_PRICE_THRESHOLD.store(u16::from_str(&e).unwrap(), Relaxed));
@@ -50,24 +54,10 @@ fn main() -> Result<(), Report> {
     ];
     let today = time::OffsetDateTime::now_local()?.weekday();
 
-    let current_day = match args().nth(1) {
-        Some(value) => {
-            let value = value.to_lowercase();
-            if value == "tomorrow" {
-                today.next().to_string().to_lowercase()
-            } else {
-                value
-            }
-        }
-        None => today.to_string().to_lowercase(),
-    };
+    let current_day = if args.tomorrow { today.next() } else { today }.to_string().to_lowercase();
 
     if !days.contains(&current_day.as_str()) {
-        return if let Some(arg) = args().nth(1) {
-            Err(eyre!("Unrecognized day/option: {}", arg))
-        } else {
-            Err(eyre!("Infallible. This is an error worth reporting."))
-        };
+       eyre!("Unknown weekday argument");
     }
 
     let week_days = days
