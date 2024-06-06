@@ -11,16 +11,6 @@ const MENSA_2: (usize, &str) = (105, "Mensa 2");
 
 pub const TO_FETCH: &[(usize, &str)] = &[MENSA_1, MENSA_2];
 
-pub static LOWER_PRICE_THRESHOLD: AtomicU16 = AtomicU16::new(200); // Do not display things cheaper than this
-
-pub fn get_lower_threshold_float() -> f64 {
-    LOWER_PRICE_THRESHOLD.load(Relaxed) as f64 / 100.0
-}
-
-pub fn get_lower_threshold_int() -> u16 {
-    LOWER_PRICE_THRESHOLD.load(Relaxed)
-}
-
 pub const BASE_DOMAIN: &str = "https://sls.api.stw-on.de";
 
 pub mod colors {
@@ -45,4 +35,28 @@ pub fn compute_price_color(price: u16, most_expensive_price: f64) -> Color {
         lerp_color(100.0 - lerp_price(price)),
         33,
     )
+}
+
+pub const DEFAULT_PRICE_THRESHOLD: u16 = 200;
+static LOWER_PRICE_THRESHOLD: AtomicU16 = AtomicU16::new(DEFAULT_PRICE_THRESHOLD); // Do not display things cheaper than this
+static UPPER_PRICE_THRESHOLD: AtomicU16 = AtomicU16::new(u16::MAX); // Do not display things cheaper than this
+
+pub fn get_lower_threshold_float() -> f64 {
+    LOWER_PRICE_THRESHOLD.load(Relaxed) as f64 / 100.0
+}
+
+pub fn get_lower_threshold_int() -> u16 {
+    LOWER_PRICE_THRESHOLD.load(Relaxed)
+}
+
+pub fn set_lower_threshold_int(v: u16) {
+    LOWER_PRICE_THRESHOLD.store(v, Relaxed);
+}
+
+pub fn set_upper_threshold_int(v: u16) {
+    UPPER_PRICE_THRESHOLD.store(v, Relaxed);
+}
+
+pub fn get_upper_threshold_int() -> u16 {
+    UPPER_PRICE_THRESHOLD.load(Relaxed)
 }

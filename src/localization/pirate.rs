@@ -1,4 +1,4 @@
-use crate::localization::{Localization, Localizer};
+use crate::localization::Localizer;
 
 pub struct PirateLocalizer {}
 

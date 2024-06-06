@@ -1,17 +1,15 @@
 use crate::localization::*;
 use std::env;
-use std::env::args;
 use std::str::FromStr;
-use std::sync::atomic::Ordering::Relaxed;
 use std::sync::OnceLock;
 
 use cli_table::ColorChoice;
-use color_eyre::eyre::{eyre, ContextCompat};
+use color_eyre::eyre::{bail, ContextCompat};
 use color_eyre::Report;
 
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{MensaMenu, Menu};
-use crate::constants::LOWER_PRICE_THRESHOLD;
+use crate::constants::set_lower_threshold_int;
 use crate::simple_argparse::argparse;
 use crate::table_formatting::{render_menus, render_meta};
 
@@ -40,8 +38,7 @@ fn main() -> Result<(), Report> {
 
     let args = argparse()?;
 
-    let _ = env::var("MENSA_LIMIT")
-        .map(|e| LOWER_PRICE_THRESHOLD.store(u16::from_str(&e).unwrap(), Relaxed));
+    let _ = env::var("MENSA_LIMIT").map(|e| set_lower_threshold_int(u16::from_str(&e).unwrap()));
 
     let days = vec![
         "monday",
@@ -54,10 +51,12 @@ fn main() -> Result<(), Report> {
     ];
     let today = time::OffsetDateTime::now_local()?.weekday();
 
-    let current_day = if args.tomorrow { today.next() } else { today }.to_string().to_lowercase();
+    let current_day = if args.tomorrow { today.next() } else { today }
+        .to_string()
+        .to_lowercase();
 
     if !days.contains(&current_day.as_str()) {
-       eyre!("Unknown weekday argument");
+        bail!("Unknown weekday argument");
     }
 
     let week_days = days

@@ -82,7 +82,8 @@ pub fn render_menus(
 
             let table = meals
                 .iter()
-                .filter(|meal| meal.price.student > constants::get_lower_threshold_int())
+                .filter(|meal| meal.price.student > constants::get_lower_threshold_int()) // Filter lower limit
+                .filter(|meal| meal.price.student <= constants::get_upper_threshold_int()) // FIlter upper limit
                 .map(fmt_meals)
                 .collect::<Vec<_>>()
                 .table()
