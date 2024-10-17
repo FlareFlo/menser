@@ -10,7 +10,7 @@ use color_eyre::Report;
 use crate::api_interactions::fetch_menus;
 use crate::api_schema::{MensaMenu, Menu};
 use crate::constants::set_lower_threshold_int;
-use crate::simple_argparse::argparse;
+use crate::simple_argparse::{argparse, WEEKDAYS};
 use crate::table_formatting::{render_menus, render_meta};
 
 /// Structs serialized from JSON API to rust representation
@@ -36,35 +36,9 @@ static COLOR: OnceLock<ColorChoice> = OnceLock::new();
 fn main() -> Result<(), Report> {
     color_eyre::install()?;
 
-    let args = argparse()?;
+    let (args, week_days) = argparse()?;
 
     let _ = env::var("MENSA_LIMIT").map(|e| set_lower_threshold_int(u16::from_str(&e).unwrap()));
-
-    let days = vec![
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday",
-        "saturday",
-        "sunday",
-    ];
-    let today = time::OffsetDateTime::now_local()?.weekday();
-
-    let current_day = if args.tomorrow { today.next() } else { today }
-        .to_string()
-        .to_lowercase();
-
-    if !days.contains(&current_day.as_str()) {
-        bail!("Unknown weekday argument");
-    }
-
-    let week_days = days
-        .into_iter()
-        .cycle()
-        .skip_while(|day| day != &current_day)
-        .take(7)
-        .collect::<Vec<_>>();
 
     // Fetch menus from today through all weekdays until a valid menu is found
     let (mut menus, day) = {
