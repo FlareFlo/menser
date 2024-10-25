@@ -7,9 +7,9 @@ use cli_table::Color::Rgb;
 const MENSA_1: (usize, &str) = (102, "Mensa 1");
 const MENSA_2: (usize, &str) = (105, "Mensa 2");
 
-// const MENSA_360: (usize, &str) = (111, "360°"); 360 is dead :(
+const MENSA_360: (usize, &str) = (111, "360°");
 
-pub const TO_FETCH: &[(usize, &str)] = &[MENSA_1, MENSA_2];
+pub const TO_FETCH: &[(usize, &str)] = &[MENSA_1, MENSA_2, MENSA_360];
 
 pub const BASE_DOMAIN: &str = "https://sls.api.stw-on.de";
 
