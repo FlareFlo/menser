@@ -4,6 +4,7 @@ use cli_table::format::Justify;
 use cli_table::{print_stdout, Cell, Color, Style, Table};
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Report;
+use itertools::Itertools;
 use pad::PadStr;
 
 use crate::api_schema::{Meal, MensaMenu};
@@ -45,7 +46,11 @@ pub fn render_menus(
                 .or_insert(vec![meal]);
         }
 
-        for (opening_hours, meals) in grouped_by_daytime.into_iter() {
+        for (opening_hours, meals) in grouped_by_daytime
+            .into_iter()
+            .sorted_unstable_by_key(|e|e.0.clone())
+            .rev()
+        {
             let fmt_meals = |meal: &&Meal| {
                 vec![
                     emojify_name(meal.name.clone())
